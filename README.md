@@ -1300,3 +1300,9 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     # prints p and defrenced version of p
     # but note that in pointers
 
+    lit 5 = 6
+    # don't worry, no error here
+    # lit makes and saves variables in a dict
+    # so name can be everything, cause it is a string
+    putv 5
+    # putv used for printing lit variables

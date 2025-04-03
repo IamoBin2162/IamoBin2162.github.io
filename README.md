@@ -878,6 +878,14 @@ it is just like if
         printf("User")
     end
 
+# &
+when you start a line with &, you tell moon that you will have a block (a bunch or lines of code)
+
+    &print(
+        "hi",
+        "bye"
+    ) end
+
 # writing python code in moon
 
     <global boobooli>

@@ -985,6 +985,10 @@ with CPP keyword, you can write C++ code in your moon file
 
 ### and note that the indentation between () with these keywords are not necessary
 
+# syntax highlighting for moon in vscode
+we have a folder called syntax in the directory, that contains files that give you the syntax highlighting
+just copy the moon folder from syntax folder in the .vscode folder (that you have it on your device)
+
 # Other Things:
 
     $age = 16

@@ -1096,16 +1096,16 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     | to       |                                                           ...                                                 |
     | define   | creates a new macro; so it can be function-like-macro or varaible-like-macro                                  |
     | nonlocal | declares a new variable which is a nonlocal; used in nested functions                                         |
-    | consume  | swap value of variables; consume A to B
-    | static   | creates a global variable
-    | forever  | inf loop
-    | LUA      | gets a Lua code and runs it
-    | RB       | gets a Ruby code and runs it
-    | ZIG      | gets a Zig code and runs it
-    | C        | gets a C code and does NOT run it
-    | CPP      | gets a C++ code and does NOT run it
-    | GLEAM    | gets a Gleam code and does NOT run it
-    | ASM      | gets a Asm code and does NOT run it
+    | consume  | swap value of variables; consume A to B                                                                       |
+    | static   | creates a global variable                                                                                     |
+    | forever  | inf loop                                                                                                      |
+    | LUA      | gets a Lua code and runs it                                                                                   |
+    | RB       | gets a Ruby code and runs it                                                                                  |
+    | ZIG      | gets a Zig code and runs it                                                                                   |
+    | C        | gets a C code and does NOT run it                                                                             |
+    | CPP      | gets a C++ code and does NOT run it                                                                           |
+    | GLEAM    | gets a Gleam code and does NOT run it                                                                         |
+    | ASM      | gets a Asm code and does NOT run it                                                                           |
 
 
 # Other Things:

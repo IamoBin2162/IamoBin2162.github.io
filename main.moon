@@ -1,0 +1,925 @@
+# <measure()>
+# # calling 'measure' function to get the execution time
+
+# class Car:
+# 	# Object-Oriented Programming
+# 	def __init__(self, name, year):
+# 		# initializing the name and year of the Car
+# 		self.name = name
+# 		self.year = year
+# end
+# # 'end' is nessecery for ending classes
+# BMW = Car("BMW", 2024)
+# # creating a instance of Car to BMW object
+# <println(BMW.name, BMW.year)>
+# # you can use <> for calling function
+# # printing the name and year of the BMW
+
+# def test():
+# 	# Creating the function, using 'def' keyword
+# 	print("hello")
+# 	print("bye")
+# 	# do sth at function, 'test'
+# end
+# # 'end' is nessecery for ending function
+# <test()>
+# # calling test function
+
+# name = "mobin"
+# # creating variable name
+# switch name:
+# # using switch-case for name variable
+# # as same as if name == ...: ...
+# 	case "mobin":
+# 		# if name == "mobin": ...
+# 		println("Hi Admin")
+# 	case _:
+# 		# in case of a switch, _ means else !
+# 		# else: ...
+# 		println("Hi User")
+# end
+# # 'end' is nessecery for ending switch-case
+
+# num = 0
+# # defining num variable
+# while num < 100:
+# 	# while CONDITION is true: ...
+# 	num += 1
+# else :
+# 	# if CONDITION is not true: ...
+# 	println("finished")
+# end
+# # 'end' is nessecery for ending while
+
+# for n in range(10):
+# 	# for loop
+# 	# until 10
+# 	# 0 1 2 3 4 5 6 7 8 9 (not the 10)
+# 	println(n)
+# end
+# # 'end' is nessecery for ending for
+
+# double = lambda num: num * 2
+# # creating lambda function
+# show_msg = fn.new("Moon Programming Language")
+# # creating lambda-like function, but with 'fn' class
+# # with 'new' function at that class
+# <println(double(7), show_msg())>
+
+# <println(math.acos(-1))>
+# # using math module functions
+
+# $name = "Mobin"
+# # global variables with '$'
+# <println(name)>
+
+# x = 0
+# # defining x variable to 0
+# until x != 10:
+# 	# while COND is true: ...
+# 	println(x)
+# 	x += 1
+# 	# print x then increse the x by 1
+# end
+# # 'end' is nessecery for ending until
+
+# unless x == 10:
+# 	# while not COND is true: ...
+# 	# or
+# 	# while COND is false: ...
+# 	println(x)
+# 	x += 1
+# 	# print x then increse the x by 1
+# end
+
+# # declaring name variable
+# # imm is gonna give nil value for this variable
+# dec name
+# <println(typeof(name))>
+# # <type 'nil'>
+
+# dec name
+# # declaring the name
+# name = fgets()
+# # getting a value from stdin
+
+# if name == "":
+# 	# if name is ""
+# 	println("bad")
+# 	# print "bad"
+# elif name == "nil":
+# 	# or if name is "nil"
+# 	println("50 50")
+# 	# print "50 50"
+# else :
+# 	# otherwise
+# 	println("good")
+# 	# good
+# end
+
+# def sayHi(name):
+# 	# creating function called sayHi with a name param
+# 	println(f"Hello {name}")
+# 	# printing message
+# end
+
+# sayHi->"Mobin"
+# # calling the function with ->
+# # but -> prints the result
+# # Hello Mobin
+# # None
+
+# # ** usage of -> in variable for calling functions are not allowed !! **
+
+# def math(a, b, func):
+# 	# a function to the func with a and b
+# 	return func(a, b)
+# end
+
+# def add(a, b):
+# 	# to use with math
+# 	return a + b
+# end
+
+# <println(math(5, 7, add))>
+# # a way to call the math
+# math->5, 7, add
+# # another way
+
+# math->10, 5, lambda x, y: x * y
+
+# as same as:
+
+# SOME_NAME = lambda x, y: x * y
+# <println(math(10, 5, SOME_NAME))>
+# math->10, 5, SOME_NAME
+
+# or
+
+# def SOME_NAME2(x, y):
+#    return x * y
+# end
+# <println(math(10, 5, SOME_NAME2))>
+# math->10, 5, SOME_NAME2
+
+# num = 0
+# until num < 100:
+# 	println(num ** 10)
+# 	num += 10
+# else:
+#   # use of else with until loop
+#   # that means when the COND is false this block (else) will be executed
+# 	println("finished process")
+# end
+
+# exec println(7 + 7)
+# exec and eval are keywords
+# eval println(7 + 7)
+
+# func = (a, b) -> a + b
+# # lambda functions using ->
+# func->7, 8
+# # -> for calling functions and -> for creating lambda functions are diffrent !!
+
+# myNone = () -> None
+# # returning None
+# # () means no params !
+# myNone->
+# # calling a function with -> without any param
+
+# $greet = (name) -> f"Oh, Hi {name}"
+# # -> function, in $ (global) variables
+# greet->"Mobin"
+# # calling 'greet'
+
+# $numbers = {"1": iota(), "2": iota(), "3": iota()}
+# # after each usage of iota()
+# # it increases the value.
+# # it starts from 0
+# println->numbers
+# # if you use -> for calling println or etc. that prints sth to stdout,
+# # you will be gotten 'None' at the end
+
+# # but:
+# sprint->numbers
+# # sprint return the value you give
+# # but no need to use it in functions
+
+# # for example:
+# Name = sprint("John Doe")
+# # here, sprint returns ( or we can say gives ) the "John Doe" to Name
+# sprint->Name
+# # not to get None !
+
+# module person:
+# 	# creating module
+# 	def __init__(self, name, age):
+# 		self.name = name
+# 		self.age = age
+
+# 	def show_result(self):
+# 		return f"{self.name} is {self.age} years old"
+# end
+# # 'end' is neccessery for ending module
+
+# $me = person("mobin", 16)
+# # instace of person
+# sprint->me.show_result()
+# # as i said ,
+# # not to get None
+
+# <io.debug(nil)>
+# # calling with <>
+# io.debug->nil
+# # calling with ->
+
+# nil |> io.debug
+# # calling function with |> (pipeline)
+# # imm exchanges this code to:
+# # io.debug(nil)
+
+# nil |> typeof |> io.debug
+# # imm exchanges this code to:
+# # io.debug(typeof(nil))
+
+# $test = io.println("Hello")
+# test == nil |> println
+# test is nil |> println
+# # because io.println return 'nil' at the end
+# # test == nil
+
+# f = io.open("main.txt", "r")
+# # opening file with mode 'r' only for reading
+# <io.println(io.freads(f))>
+# # readlines, returns a list
+# f |> io.close
+# # close file
+# <io.println(io.status(f))>
+# # is file closed or not ?
+
+# age = 14
+# canVoteOrNot = age >= 18 and true or false
+# # means:
+# # if age >= 18:
+# 	# return true
+# # else:
+# 	# return false
+# <io.write(tostring(canVoteOrNot))>
+
+# alias myNone = None
+# # new alias type
+# <io.println(myNone)>
+
+# if both(True, True):
+# 	# both must be True
+# 	io.println("Hi")
+# end
+
+# if either(True, True):
+# 	# one of them must be True or both
+# 	io.println("Hello")
+# end
+
+# if neither(False, False):
+# 	# non of them must be True
+# 	io.println("Bye")
+# end
+
+# if xor(True, False):
+# 	# one of them must be True
+# 	io.println("Boobooli")
+# end
+
+# "if" |> typeof |> io.println
+# # <type 'keyword'>
+
+# # moon has alaphabet's number,
+# # like one, two, ...
+# # but to ten
+# # but we can make higher than ten
+# eleven = int(tostring(one) + tostring(one))
+# # getting the string of one ('1') twice
+# # and put them together
+# # and change the type of '11' to a int
+# # '11' -> 11
+# io.sprint -> eleven + eleven
+# # 22
+
+# mexec("name = 'mobin'")
+# # mexec => moon execute
+# # how it works?
+# # first it gets the code you give
+# # then writes it into a file called '__exec__.txt'
+# # then runs it with 'moon' in command line
+# # so if e.g you create a variable called 'name' with mexec,
+# # there wont be a variable called 'name' in this file !
+
+# # puts is added as a keyword, like print (but print is function)
+# # but the diffrence between 'puts' and other printing functions is
+# # 'puts' uses pretty printer to print sth
+# # so e.g. a list or dict or ... will be printed pretty :)
+# # puts ...
+# puts keywords
+
+# global x = (a) -> a
+# # global x
+# # as same as $x = ...
+# puts x(7)
+
+# with open("__exec__.txt", "r") as f:
+#   # as same as: f = open(...)
+#   # but with 'with' keyword this is going to close it auto !
+# 	io.println(f)
+# end
+
+# puts [x for x in range(1, 100)]
+# # as same as:
+# # for x in range(1, 100):
+# #    puts x
+# # end
+
+# $x = %s[hello, world]
+# # a way to create a string
+# $y = %(hello, world)
+# # another way to create string
+# $z = ?a
+# # another way to create string, but this way (?) accepts only char
+# # that means a string with length 1
+
+# y = (7..8)
+# # just 7 not 8
+# y = (7..8+1)
+# # 7, 8
+# y = (7..9)
+# # 7, 8
+# # making range with '..'
+
+# puts nan == nan
+# # False
+
+# never test = 8
+# variables with 'never' wont be used
+# #puts test
+# # error: test is not defined
+
+# mexec("if 1:\n\tio.println('hello')\nelse:\n\tio.println('bye')\nend")
+
+# require "math"
+# # if there is problem, raises Error
+# include "math"
+# # if there is problem, prints Warning
+
+# a = 8
+# do :
+# 	io.println("hello")
+# 	# first prints "hello"
+# 	# then if COND is true
+# 	# prints "hello" in loop
+# while a > 7
+# end
+
+# def say_hi():
+#   return "hello"
+# end
+# # if function doesnt take any param, you can use '<-' to call it
+# say_hi <-
+# # as same as:
+# # print(say_hi())
+
+# measure <-
+# $result = 0
+# for k in Range(1_000_000):
+#   result += ~k
+# end
+# io.sprint -> result
+
+# require('math')
+# $a = {"p" : print}
+# <a["p"]("Hello, World")>
+# print = math.sin
+# <a["p"](print(1))>
+# $sin = a["p"]
+# <sin("Bye, World")>
+# # playing with name, but this is dangerous !
+
+# <io.new("x", void)>
+
+# def y(a: int, b: int) -> int:
+#   # type annotations
+#   io.print(a + b)
+# end
+
+# include('Int')
+# $odd_or_even = (number) -> "even" if Int.is_even(number) else "odd"
+# io.sprint -> odd_or_even(70)
+# <io.print_r([nil, true, false])>
+
+# include('List')
+# <List.print_r(["hello"])>
+
+# puts to_s(7)
+# # to string
+# puts to_i(7)
+# # to int
+# puts to_f(7)
+# # to float
+# puts to_c(7)
+# # to complex
+# puts to_l('7')
+# # to list
+# puts to_t('7')
+# # to tuple
+# puts to_set('7')
+# # to set
+# puts to_bin(7)
+# # to binary
+# puts to_b(7)
+# # to bool
+# puts to_o(7)
+# # to octal
+# puts to_n(7)
+# # to nil
+# puts to_d(0, '7')
+# # to dict
+# puts to_enum([1, 2])
+# # to enumerate
+# puts to_z('hi')
+# # to zero
+# puts to_r(0.1)
+# # to rational
+
+# class Test:
+#   def test(): ...
+# end
+# puts responds_to(Test, 'test')
+
+# <io.throw(SyntaxError, "hello")>
+
+# io.print => "hello"
+
+# io.putc => 'c'
+
+# require('Math')
+# io.print => Math.pi
+
+# include('File')
+# $f = File.fopen("main.txt", "r")
+# io.print => File.freadc(f)
+# io.print => File.freads(f)
+# io.print => File.fread(f)
+# File.close => f
+# io.print => File.closed(f), File.name(f), File.mode(f)
+# $f = File.fopen("main.txt", "a")
+# io.print => File.fwrite("\nbye, world", f)
+
+# include('Random')
+# <Random.new_seed(10)>
+# io.print => Random.rand()
+# io.print => Random.randi(0, 10)
+
+# switch 70:
+#   case range(1, 50):
+#     io.print("low")
+#   case range(51, 75):
+#     io.print("medium")
+#   case range(76, 100):
+#     io.print("high")
+#   case _:
+#     io.print("very high")
+# end
+
+# io.print => Range("a", "e").new()
+# for idx in range(len(Range("a", "c").new())):
+#   io.print(f"{idx}: {Range('a', 'c').new()[idx]}")
+# end
+
+# include('Time')
+# io.print => Time.now
+
+# system => 'echo hello'
+
+# require 'Int'!
+# include 'List'!
+# List.print_r [Int.is_even(8)]!
+
+# io.sprint -> "hello %s" % "world"
+# io.sprintf -> "hello %s", "world"
+
+# io.sprint(true)?
+
+# with "hello" as item:
+#   io.print(item)
+# end
+
+# class Person:
+#   def __init__(self, name: str, age: int, id: int) -> None:
+#     self.name = name
+#     self.age = age
+#     self.__id = id
+# end
+# $mobin = Person("mobin", 16, 122333)
+# io.print(mobin.name, mobin.age, mobin._Person__id)!
+
+# <boobooli = "@">
+# io.print(boobooli)!
+
+# 💀
+
+# io.printf("%.80f", .1 + .2)!
+# io.printf("💀")!
+
+# io.printf("%s", _)!
+# io.gets()!
+# io.printf("%s", _)!
+# io.read("")!
+# io.printf("%s", _)!
+# io.getc()!
+# io.printf("%s", _)!
+
+# $result = ""
+# for count in range(5+1):
+#   result += to_s(io.rand(1))
+# end
+# io.printf(result)!
+
+# $x = io.catch("io.printf(hello)", NameError)
+# io.printf("%s", x == True)!
+# # error, True
+
+# $x = io.catch("io.printf(hello)", KeyError)
+# io.printf("%s", x == ERR)!
+# # True
+
+# $x = io.catch("io.printf('hello')", NameError)
+# io.printf("%s", x == nil)!
+# # 'hello', True
+
+# io.printf("%d", argc)!
+
+# io.printf(chomp("hello\n\n"))!
+# io.printf(chop("hello"))!
+
+# io.open("main.txt", "r") do |file|:
+#   io.printf("%s", io.freads(file))
+# end
+
+# io.printf("%s", is_zero(0))!
+
+# $a = Char('*')
+
+# `cls`
+
+# puts self
+
+# include('typing')
+# @typing.final
+# class Test:
+#   ...
+# end
+
+# $Func = (a, b) -> a + b
+# puts Func(2, 2)
+# $Func = (a, b) -> a - b
+# puts Func(2, 2)
+
+# $value = 0
+# puts value
+# update('value', 7)!
+# puts value
+# # 7
+
+# update('value', 8)!
+# # err
+
+# try:
+#   io.puts(0 / 0)
+# except:
+#   io.puts(ERR)
+# end
+# io.puts(ERR)
+# raise KeyError(nil)!
+# io.puts(ERR)
+
+# puts _
+# # nil
+# $x = io.read(">>> ")
+# puts x == _
+# # True
+
+# puts ERR
+# nil
+
+# io.throw(TypeError, "Mooooon")!
+# puts ERR
+# #<TypeError: Mooooon>
+
+# $result1 = stdin.readline()
+# puts result1
+# # getting input with stdin
+# # note that, there is no 's' at the end of readline !
+
+# $result2 = stdin.readlines()
+# # note that, there is a 's' at the end of readlines !
+# # infinitly getting input
+# # because when you are reading stdin, with readlines, this is going to read the lines till the end, but the end for stdin is ^C (i think this is only in Windows), so your program will not finish until ^C
+# puts result2
+
+# $pointers = {}
+# class io:
+
+#     def cout(*values):
+#         for value in values:
+#             print(value)
+
+#     def cin(prompt):
+#         return input(prompt)
+
+#     def __rshift__(self, value):
+#         return io.cout(value)
+
+#     def __lshift__(self, prompt):
+#         return io.cin(prompt)
+
+#     def __and__(self, value):
+#         pointers[hex(id(value))] = value
+#         return hex(id(value))
+
+#     def __mul__(self, pointer):
+#         try:
+#             return pointers[pointer]
+#         except KeyError:
+#             print(f"ERR: {pointer} is not defined or not a pointer")
+# end
+
+# $_ = io()
+# _ >> "hello"!
+# _ >> (_ << ">>> ")!
+# _ >> (_ &7)!
+# _ >> (_ * (_ &7))!
+# $p = _ &'hello'
+# _ >> p!
+# _ >> (_ *p)!
+# _ >> f"{p} -> {_ *p}"!
+# _ >> (_ &(_ << ">>> "))!
+
+# $fname = 'Mobin';
+# $full_name = strcpy(fname) + ' Shibafar';
+# puts full_name
+
+# `moon main.moon`
+
+
+# def prime():
+#   io.printf("Starting...")
+#   result = 0
+#   for num in range(0, 10):
+#     if num > 1:
+#       for i in range(2, num):
+#         if num % i == 0:
+#           break
+#       else :
+#         io.printf("%d", num)
+#         result += num
+#   io.printf("-- %d --", result)
+# end
+# prime()!
+
+# # i added async funcs
+
+# match 5:
+#   case 5:
+#     printf("%s", "yep")
+#   case _:
+#     printf("%s", "nop")
+# end
+# # you can use match as like switch
+
+# printf("Hello") <=
+# # calls itself without args
+
+# printf => "Hello"
+# # calls itself with args
+
+# io.sprintf -> "Hello"
+# # prints itself with args
+
+# io.sprintf("Hello") <-
+# # prints itself without args
+
+# <printf("Hello")>
+# # call the function
+
+# printf("Hello")!
+# # calls the function
+
+
+# local name = "Mobin"
+# puts name
+
+# todo as "I haven't completed it yet"
+# panic as "Oh shoot"
+
+# io.throw(Error, 'Oh')!
+
+# 5 add 7 add 8 add 8
+# 28 sub 8 sub 10
+# 2 mult 8 mult 2
+# 81 div 9 div 3
+# 2 pow 2 pow 2
+# 15 mod 5
+# True xor False
+# 1 shr 5
+# 1 shl 5
+
+# addr nil as nil_ptr
+# puts nil_ptr
+
+# __clear_exec__ <=
+# parseStmt("puts 'Hello'")!
+
+# $name = 'Mobin'
+# when name == "Mobin":
+#   printf("Admin")
+# else:
+#   printf("User")
+# end
+
+# $list = [0, 1, 2]
+# foreach elem as list:
+#   printf("%d", elem)
+# end
+
+# $list = Range('d', 'f').new()
+# foreach elem as list:
+#   printf(elem)
+# end
+
+# io.printf("%.2f", 22 / 7)!
+
+# printf(DidYouMean.correction2("returm io.printf"))!
+# printf(DidYouMean.correction("put"))!
+
+# printf(each([1, 2, 3]))!
+
+# printf(next("a9b"))!
+
+# fail("This is RuntimeError")!
+
+# print(Symbol("done"))!
+
+# type Z = dict[int]
+# $num: Z = 5
+# puts num
+
+# alias Z int
+# $num: Z = 5
+# puts num
+
+# struct Student:
+#     name: str
+#     age: int
+#     grade: str
+# end
+# $Ali = Student()
+# $Ali.name = "Ali"
+# $Ali.age = 15
+# $Ali.grade = 'A'
+# puts Ali.name
+
+# enum week {"Sunday": iota()+1, "Monday": iota()+1, "Tuesday": iota()+1, "Wednesday": iota()+1, "Thursday": iota()+1, "Friday": iota()+1, "Saturday": iota()+1}
+# enum today week = 'Sunday'
+# puts today
+
+# say "Hello, world"
+
+# 8 neq 9
+# 8 eq 8
+# 8 gt 5
+# 8 lt 9
+# 8 ge 8
+# 8 le 8
+
+# my grade = 17
+# io.lprint("grade")!
+
+# our name = "Mobin"
+# puts name
+
+# num := 2162
+# puts num
+
+# until (message := io.gets()) != "mobin":
+#     printf("Oh")
+# end
+
+# my num = 2162
+# io.lprint('num')!
+# discard num
+# io.lprint('num')!
+
+# io.cprint("Hello")!
+
+# puts Imaginary(7, 8)
+
+# END {
+#     printf("%d", 8 * 8)
+# }
+# defer printf("Bye World")
+
+# mut user = "Mobin"
+# puts user
+
+# package moon
+
+# module File:
+#     NA = 6.02 * (10 ** 23)
+# end
+# require("File")!
+# puts File.NA
+
+# auto array = Range(0, 10).new()
+
+# define("n", 0)!
+# puts n
+
+# require("fmt")!
+
+# loop:
+#     fmt.Println("Hello")
+# end
+
+# puts Ok("print")
+
+# lit $n = 0
+# io.vprintln('$n')!
+
+# IO >> (IO << "-> ")
+
+# set n to 8
+# puts n
+
+# define __my_macro(a, b) a if a < b else b
+# puts __my_macro(8, 6)
+
+# define magic_number 2162
+# puts magic_number
+
+# a := 0
+# b := 1
+# consume a to b
+# puts a
+# puts b
+
+# deprecated("This is old, use new one")
+# def old():
+#     printf("Old")
+# end
+# def new():
+#     printf("New")
+# end
+# old <=
+
+# printf("%s", maybe, undefined, unknown, true, false, True, False, nil, None, inf, nan, ok, ERR, HUGE_VAL, Nil)!
+
+# n := make(bool)
+# printf("%s", n)!
+
+# static n = 5
+# puts n
+
+# forever:
+#     printf("Hi")
+# end
+
+# ---------------------------------------------------------------------------
+
+# RB (
+
+#     p "Hello, World"
+
+# ) end
+
+# LUA (
+
+#     print("Hello")
+
+# ) end
+
+# ZIG (
+#     const std = @import("std");
+
+#     pub fn main() void {
+#         std.debug.print("Hello", .{});
+#     }
+
+# ) end
+
+# ---------------------------------------------------------------------------
+
+# puts Nil, NilPtr, NonePtr
+
+# unreachable()!
+# panic as "Not hereeeeee!"
+# todo as "Complete here"
+
+

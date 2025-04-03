@@ -878,8 +878,6 @@ it is just like if
         printf("User")
     end
 
-
-
 # writing python code in moon
 
     <global boobooli>
@@ -892,6 +890,100 @@ it is just like if
     <name = "Mobin">
     <printf(name)>
     # Mobin
+
+# writing Ruby code in moon
+with RB keyword, you can write ruby codes in your moon file
+
+    RB (
+
+        p "Hello, World"
+
+    ) end
+
+note that you MUST put ') end' at the end
+
+# writing Lua code in moon
+with LUA keyword, you can write Lua code in your moon file
+
+    LUA (
+
+        print("Hello")
+
+    ) end
+
+note that you MUST put ') end' at the end
+
+# writing Zig code in moon
+with ZIG keyword, you can write Zig code in your moon file
+
+    ZIG (
+        const std = @import("std");
+
+        pub fn main() void {
+            std.debug.print("Hello", .{});
+        }
+
+    ) end
+
+#### with these three keywords, you can write other language's code in moon, and then, moon will run it auto :)
+#### but we still have some languages, but the problem is here, that moon will NOT run that auto :(
+
+# writing C code in moon
+with C keyword, you can write C code in your moon file
+
+    C (
+        #include <stdio.h>
+
+        int main() {
+            printf("Hello, World");
+            
+            return 0;
+        }
+
+    ) end
+
+# writing Asm code in moon
+with ASM keyword, you can write Asm code in your moon file
+
+    ASM (
+
+        section .data
+        ; and etc.
+
+    ) end
+
+# writing Gleam code in moon
+with GLEAM keyword, you can write Gleam code in your moon file
+
+    GLEAM (
+
+        import gleam/io
+
+        pub fn main() {
+
+            io.print("Hello, World")
+
+            Nil
+
+        }
+
+    ) end
+
+# writing C++ code in moon
+with CPP keyword, you can write C++ code in your moon file
+
+    CPP (
+        #include <iostream>
+
+        int main() {
+            std::cout << "Hello, World";
+
+            return 0;
+        }
+
+    ) end
+
+### and note that the indentation between () with these keywords are not necessary
 
 # Other Things:
 

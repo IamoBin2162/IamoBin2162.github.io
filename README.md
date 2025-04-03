@@ -886,6 +886,13 @@ when you start a line with &, you tell moon that you will have a block (a bunch 
         "bye"
     ) end
 
+# putv
+it is for printing the value of lit variables
+
+    lit 5 = 6
+    putv 5
+    # 6
+
 # writing python code in moon
 
     <global boobooli>
@@ -996,6 +1003,110 @@ with CPP keyword, you can write C++ code in your moon file
 # syntax highlighting for moon in vscode
 we have a folder called syntax in the directory, that contains files that give you the syntax highlighting
 just copy the moon folder from syntax folder in the .vscode folder (that you have it on your device)
+
+# keywords:
+    
+    | True     | shows boolean true value                                                                                      |
+    | False    | shows boolean false value                                                                                     |
+    | nil      | a type alias of None, but you'd better use Nil not nil for showing nothing                                    |
+    | Nil      | shows nothingness                                                                                             |
+    | module   | creates a module                                                                                              |
+    | alias    | creates a type alias                                                                                          |
+    | dec      | declares a varaible                                                                                           |
+    | def      | defines a new function                                                                                        |
+    | if       | creates conditions                                                                                            |
+    | else     | it can be used with: for, while, if, try, that does when the other blocks are not executed b/c of being false |
+    | elif     |                                                    ...                                                        |
+    | until    | do sth until condition is false                                                                               |
+    | unless   | do sth if consition if false                                                                                  |
+    | class    | creates a new class                                                                                           |
+    | switch   | switch-case stmt that check on variables                                                                      |
+    | case     | ...                                                                                                           |
+    | while    | a loop which goes until condition is false                                                                    |
+    | for      | a loop that usually is used for iterating over iterators                                                      |
+    | try      | try block that tries the code given and catchs errors                                                         |
+    | excpect  |                                                     ...                                                       |
+    | finally  | this block will be ran not based on try block caught any error or not                                         |
+    | async    | async functions                                                                                               |
+    | await    | used with only async functions                                                                                |
+    | end      | end the block, used with: if-else-elif, while, for, def, try, RB, LUA, ...                                    |
+    | yield    | used in generator functions                                                                                   |
+    | pass     | passes in a block                                                                                             |
+    | continue | continues in a block to the next one                                                                          |
+    | break    | breaks a block                                                                                                |
+    | is       | checks for an instance                                                                                        |
+    | in       | checks for containing                                                                                         |
+    | raise    | raises a new error                                                                                            |
+    | return   | returns a value or maybe no value and then exits function                                                     |
+    | and      | and operator                                                                                                  |
+    | or       | or op                                                                                                         |
+    | lambda   | creates a lambda and anonymous function                                                                       |
+    | as       | is used with importing modules and packages                                                                   |
+    | from     | is used with importing modules and packages                                                                   |
+    | assert   | raise a assert error if given condition is false                                                              |
+    | del      | deletes a varaibles or function or any object                                                                 |
+    | global   | declares a new globals variable                                                                               |
+    | not      | not op                                                                                                        |
+    | with     | is used to wrap the execution of a block with methods defined by a context manager                            |
+    | puts     | prints values in the console                                                                                  |
+    | putv     | prints the values of variables that are created with lit                                                      |
+    | maybe    | sth between True and False; we can have this definition: maybe is (True or False)                             |
+    | never    | makes a variable that is not gonna be used                                                                    |
+    | do       | is used with: while, blocks                                                                                   |
+    | undef    | undefines an object                                                                                           |
+    | import   | imports a pakcage or module                                                                                   |
+    | None     | shows nothingness, it is came from Python                                                                     |
+    | match    | is used with case keyword for a match-case                                                                    |
+    | todo     | is used to raise a todo error that warns coder that this code is not complete                                 |
+    | panic    | is used to panic when the code reaches where it shouldn't have been                                           |
+    | when     | is just if                                                                                                    |
+    | foreach  | for each element in an iterator do sth                                                                        |
+    | add      | add op (+)                                                                                                    |
+    | sub      | sub op (-)                                                                                                    |
+    | mult     | mult op (*)                                                                                                   |
+    | div      | div op (/)                                                                                                    |
+    | pow      | pow op (**)                                                                                                   |
+    | mod      | mod op (%)                                                                                                    |
+    | xor      | xor op (^)                                                                                                    |
+    | shr      | right shift op (>>)                                                                                           |
+    | shl      | left shift op (<<)                                                                                            |
+    | addr     | returns a pointer of a object and saves it in the varible you give; add STH as RES                            |
+    | type     | as a keyword, creates a new type alias                                                                        |
+    | struct   | creates a new struct                                                                                          |
+    | enum     | creates a new enum                                                                                            |
+    | say      | prints values to console                                                                                      |
+    | eq       | equal op (==)                                                                                                 |
+    | neq      | not equal op (!=)                                                                                             |
+    | gt       | greater than (>)                                                                                              |
+    | lt       | less that (<)                                                                                                 |
+    | ge       | greater than equal (>=)                                                                                       |
+    | le       | less than equal (<=)                                                                                          |
+    | my       | creates a local variable                                                                                      |
+    | our      | creates a global variable                                                                                     |
+    | defer    | is used to ensure that a function call is performed later in a program’s execution                            |
+    | END      | is used for doing bunch or maybe one work at the end, even if you write it at first of your file              |
+    | discard  | discards a object                                                                                             |
+    | mut      | creates a muttable varaible                                                                                   |
+    | package  | creates a new package                                                                                         |
+    | auto     | creeates a new variable                                                                                       |
+    | loop     | infinite loop                                                                                                 |
+    | lit      | creates a local variable, but a special one, LOOK AT THE END OF 'other things'                                |
+    | local    | creates a loacl variable                                                                                      |
+    | set      | creates a new variable; set STH to STH_ELSE                                                                   |
+    | to       |                                                           ...                                                 |
+    | define   | creates a new macro; so it can be function-like-macro or varaible-like-macro                                  |
+    | nonlocal | declares a new variable which is a nonlocal; used in nested functions                                         |
+    | consume  | swap value of variables; consume A to B
+    | static   | creates a global variable
+    | forever  | inf loop
+    | LUA      | gets a Lua code and runs it
+    | RB       | gets a Ruby code and runs it
+    | ZIG      | gets a Zig code and runs it
+    | C        | gets a C code and does NOT run it
+    | CPP      | gets a C++ code and does NOT run it
+    | GLEAM    | gets a Gleam code and does NOT run it
+    | ASM      | gets a Asm code and does NOT run it
+
 
 # Other Things:
 

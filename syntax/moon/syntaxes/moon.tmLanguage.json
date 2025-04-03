@@ -1,0 +1,118 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Moon",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#comments"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [
+			{
+				"name": "keyword.control.moon",
+				"match": "\\b(true|false|True|False|nil|alias|dec|def|if|elif|else|until|unless|class|switch|case|while|for|try|except|finally|async|await|end|yield|pass|continue|break|is|in|raise|return|and|or|lambda|as|from|assert|del|global|not|with|puts|maybe|never|include|require|do|undef|as|import|None|match|todo|panic|when|foreach|add|sub|mult|div|pow|mod|xor|shr|shl|addr|type|struct|enum|say|eq|neq|gt|ge|lt|le|my|our|discard|defer|END|mut|package|module|auto|lit|local|set|to|dec|define|nonlocal|consume|undefined|unknown|inf|nan|static|forever|Nil|ERR|ok|Any|self|require|include|iota|HUGE_VAL|LUA|RB|ZIG)\\b"
+			},
+			{
+				"name": "variable.define.operator",
+				"match": "$"
+			}, {
+				"name": "string.quoted.double",
+				"match": "\""
+			}, {
+				"name": "string.quoted.single",
+				"match": "'"
+			}, {
+				"name": "string.quoted.triple",
+				"match": "\"\"\""
+			}, {
+				"name": "keyword.operator.assignment.moon",
+				"match": "=|:="
+			}, {
+				"name": "keyword.functions.moon",
+				"match": "\\b(new|printf|print|zero|one|two|three|four|five|six|seven|eight|nine|ten|stdout|stdin|stderr|argv|__FILE__|__VERSION__|__LOCALS__|__GLOBALS__|__NAME__|FILE|__etype__|typeof|isinstanceof|measure|sizeof|lenof|tostring|toint|tofloat|RED|ORANGE|PURPLE|CYAN|BASE|UNDERLINE|BOLD|YELLOW|ORANGE|__clear_exec__|to_s|to_i|to_f|to_c|to_l|to_t|to_set|to_bin|to_b|to_o|to_n|to_d|to_enum|to_z|to_r|responds_to|Range|io.print|io.println|io.throw|io.open|io.freads|io.fread|io.freadc|io.fprint|io.fprintln|io.fprintf|io.close|io.status|io.read|io.fwrite|io.gets|io.getc|io.putc|io.printf|io.sprint|io.sprintf|io.var_dump|io.print_r|io.exit|io.id|io.rand|io.sleep|io.format|io.catch|io.pprint|io.pprintf|io.puts|io.lprint|io.lprintln|io.cprint|io.vprint|io.vprintf|io.vprintln|io|pairs|strcpy|chop|chomp|argc|make|system|update|mexec|parseStmt|next|before|int|float|str|bool|list|dict|tuple|byte|rune|any|error|swap|NilPtr|NonePtr|unreachable)\\b"
+			},
+			{
+				"name": "keyword.operator.arrow.moon",
+				"match": "(<\\-|\\->)"
+			},
+			{
+				"name": "keyword.operator.pipe.moon",
+				"match": "\\|>"
+			},
+			{
+				"name": "keyword.operator.splat.moon",
+				"match": "\\.\\."
+			},
+			{
+				"name": "keyword.operator.comparison.moon",
+				"match": "(==|!=)"
+			},
+			{
+				"name": "keyword.operator.comparison.int.moon",
+				"match": "(<=|>=|<|>)"
+			},
+			{
+				"name": "keyword.operator.logical.moon",
+				"match": "(&&|\\|\\|)"
+			},
+			{
+				"name": "keyword.operator.string.moon",
+				"match": "<>"
+			},
+			{
+				"name": "keyword.operator.other.moon",
+				"match": "\\|"
+			},
+			{
+				"name": "keyword.operator.arithmetic.int.moon",
+				"match": "(\\+|\\-|/|\\*|%)"
+			},
+			{
+				"name": "string.quoted.double.example",
+				"match": "\".*$\""
+			},
+			{
+				"name": "string.quoted.double.example",
+				"begin": "\"",
+				"end": "\""
+			},
+			{
+				"name": "string.quoted.single.example",
+				"begin": "'",
+				"end": "'"
+			},
+			{
+				"name": "string.quoted.triple",
+				"begin": "\"\"\"",
+				"end": "\"\"\""
+			}
+		]
+		},
+		"strings": {
+			"name": "string.quoted.double.moon",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.moon",
+					"match": "\\\\."
+				}
+			]
+		},
+		"comments": {
+			"name": "single.comment.moon",
+			"match": "#.*$",
+			"captures": {
+				"0": "comment.line.moon"
+			}
+		}
+	},
+	"scopeName": "main.moon"
+}

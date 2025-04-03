@@ -1,0 +1,37 @@
+{
+	"name": "moon",
+	"displayName": "moon",
+	"description": "MooN",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.96.0"
+	},
+	"categories": [
+		"Programming Languages"
+	],
+	"contributes": {
+		"languages": [
+			{
+				"id": "moon",
+				"aliases": [
+					"Moon",
+					"moon"
+				],
+				"extensions": [
+					".moon"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "moon",
+				"scopeName": "main.moon",
+				"path": "./syntaxes/moon.tmLanguage.json"
+			}
+		]
+	},
+	"__metadata": {
+		"size": 6538
+	}
+}

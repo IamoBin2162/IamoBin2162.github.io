@@ -880,6 +880,46 @@ it is for printing the value of lit variables
     putv 5
     # 6
 
+# ~> 
+this is called, soft-calling that is used for calling functions and methods
+but why soft?
+because it first check that the given param(s) is(are) (a) valid thing(s) or not !
+if it is, prints the result of calling it
+if it is not, passes so __softly__
+
+    typeof ~> Nil
+    # #<Nil>
+
+    typeof ~> NotValid
+    # 
+    # 👆🏻 nothing in the result
+
+# var
+creates a new variable
+but var has so many so things to be implemented in :)
+
+#### soft-calling:
+it is as mentioned, but here it returns the result !
+
+#### =>
+calling functions with params
+    
+    var call = io.sprint => "Hi"
+
+#### <=
+calling functios without params
+
+    var another_call = int <=
+
+#### fn
+creates a lambda function
+
+    var func = fn (name)       ->    f"Hello {name}"
+                  ______       __    _______________
+                  parens       ->    no return keyword
+                  are          not   for returning !
+                  required     =>
+
 # writing python code in moon
 
     <global boobooli>
@@ -1093,6 +1133,8 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     | CPP      | gets a C++ code and does NOT run it                                                                           |
     | GLEAM    | gets a Gleam code and does NOT run it                                                                         |
     | ASM      | gets a Asm code and does NOT run it                                                                           |
+    | var      | creates a new variable, but with so many feathers                                                             |
+    | fn       | is used in var, to make lambda functions                                                                      |
 
 
 # Other Things:

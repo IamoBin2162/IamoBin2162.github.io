@@ -14,7 +14,6 @@ from pprint import pprint as __pp__
 from fractions import Fraction
 from collections import namedtuple
 # from warnings import deprecated
-from deprecation import deprecated
 import re
 from collections import Counter
 
@@ -33,7 +32,7 @@ type nil = None
 type true = True
 type false = False
 type maybe = 0 | 1
-type undefined = 'undefined'
+# type undefined = 'undefined'
 type unknown = 'unknown'
 type char = 'char'
 type HUGE_VAL = 'HUGE_VAL'
@@ -93,11 +92,11 @@ IO = IO()
 keywords = [
     'true', 'false', 'nil', 'module', 'alias', 'dec', 'def', 'if', 'elif', 'else', 'until', 'unless', 'class', 'switch', 'case', 'while', 'for',
     'try', 'except', 'finally', 'async', 'await', 'end', 'yield', 'pass', 'continue', 'break', 'is', 'in', 'raise', 'return', 'and', 'or',
-    'lambda', 'as', 'from', 'assert', 'del', 'global', 'not', 'with', 'puts', 'maybe', 'never', 'include', 'require', 'do', 'undef',
-    'as', 'True', 'False', 'import', 'None', 'async', 'await', 'match', 'todo', 'panic', 'when', 'foreach',  'add', 'sub', 'mult', 'div', 
+    'lambda', 'as', 'from', 'assert', 'del', 'global', 'not', 'with', 'puts', 'maybe', 'never', 'do', 'undef',
+    'True', 'False', 'import', 'None', 'match', 'todo', 'panic', 'when', 'foreach',  'add', 'sub', 'mult', 'div', 
     'pow', 'mod', 'xor', 'shr', 'shl', 'addr', 'type', 'struct', 'enum', 'say', 'eq', 'neq', 'gt', 'ge', 'lt', 'le', 'my', 'our', 'defer',
-    'END', 'discard', 'mut', 'package', 'module', 'auto', 'loop', 'lit', 'local', 'set', 'to', 'define', 'nonlocal', 'consume', 'static',
-    'forever', 'LUA', 'RB', 'ZIG', 'unreachable', 
+    'END', 'discard', 'mut', 'package', 'auto', 'loop', 'lit', 'local', 'set', 'to', 'define', 'nonlocal', 'consume', 'static',
+    'forever', 'LUA', 'RB', 'ZIG', 'C', 'CPP', 'GLEAM', 'ASM', 'putv', 'var', 'fn'
 ]
 keywords.sort()
 
@@ -226,9 +225,18 @@ def __pow__(a, b):
     return a ** b
 
 def typeof(value: typing.Any):
+
+    # if value not in [nil, Nil, None, True, False, true, false, inf, maybe, undefined]:
+        # return f"#<{value}>"
+
+    # else:
+        # return f"#<{value.__class__.__name__}>"
     
     if value == nil:
         return "#<nil>"
+    
+    if value == Nil:
+        return "#<Nil>"
     
     if value == true:
         return "#<bool>"
@@ -272,77 +280,77 @@ def typeof(value: typing.Any):
     if value in [stdin, stdout, stderr]:
         return "#<stdio>"
     
-    if value.__class__.__name__ == 'str':
-        result = 'String'
-        return f"#<{result}>"
+    # if value.__class__.__name__ == 'str':
+    #     result = 'String'
+    #     return f"#<{result}>"
 
-    elif value.__class__.__name__ in ['int', 'float', 'complex']:
-        result = 'Number'
-        return f"#<{result}>"
+    # elif value.__class__.__name__ in ['int', 'float', 'complex']:
+    #     result = 'Number'
+    #     return f"#<{result}>"
 
-    elif value.__class__.__name__ == 'list':
-        result = 'List'
-        return f"#<{result}>"
+    # elif value.__class__.__name__ == 'list':
+    #     result = 'List'
+    #     return f"#<{result}>"
 
-    elif value.__class__.__name__ == 'dict':
-        result = 'Dict'
-        return f"#<{result}>"
+    # elif value.__class__.__name__ == 'dict':
+    #     result = 'Dict'
+    #     return f"#<{result}>"
 
-    elif value.__class__.__name__ == 'set':
-        result = 'Set'
-        return f"#<{result}>"
+    # elif value.__class__.__name__ == 'set':
+    #     result = 'Set'
+    #     return f"#<{result}>"
 
-    elif value.__class__.__name__ == 'tuple':
-        result = 'Tuple'
-        return f"#<{result}>"
+    # elif value.__class__.__name__ == 'tuple':
+    #     result = 'Tuple'
+    #     return f"#<{result}>"
 
-    elif value.__class__.__name__ == 'object':
-        result = 'Object'
-        return f"#<{result}>"
+    # elif value.__class__.__name__ == 'object':
+    #     result = 'Object'
+    #     return f"#<{result}>"
 
-    elif value.__class__.__name__ == 'bytes':
-        result = 'Bytes'
-        return f"#<{result}>"
+    # elif value.__class__.__name__ == 'bytes':
+    #     result = 'Bytes'
+    #     return f"#<{result}>"
 
-    elif value.__class__.__name__ == 'bytearray':
-        result = 'Bytearray'
-        return f"#<{result}>"
+    # elif value.__class__.__name__ == 'bytearray':
+    #     result = 'Bytearray'
+    #     return f"#<{result}>"
 
-    elif value.__class__.__name__ == 'type':
-        result = 'Type'
-        return f"#<{result}>"
+    # elif value.__class__.__name__ == 'type':
+    #     result = 'Type'
+    #     return f"#<{result}>"
 
-    elif value.__class__.__name__ == 'memoryview':
-        result = 'Memoryview'
-        return f"#<{result}>"
+    # elif value.__class__.__name__ == 'memoryview':
+    #     result = 'Memoryview'
+    #     return f"#<{result}>"
 
-    elif value.__class__.__name__ == 'bool':
-        result = 'Bool'
-        return f"#<{result}>"
+    # elif value.__class__.__name__ == 'bool':
+    #     result = 'Bool'
+    #     return f"#<{result}>"
 
-    elif value.__class__.__name__ == 'slice':
-        result = 'Slice'
-        return f"#<{result}>"
+    # elif value.__class__.__name__ == 'slice':
+    #     result = 'Slice'
+    #     return f"#<{result}>"
 
-    elif value.__class__.__name__ == 'types.FunctionType':
-        result = 'Function'
-        return f"#<{result}>"
+    # elif value.__class__.__name__ == 'types.FunctionType':
+    #     result = 'Function'
+    #     return f"#<{result}>"
 
-    elif value.__class__.__name__ == 'frozenset':
-        result = 'Frozenset'
-        return f"#<{result}>"
+    # elif value.__class__.__name__ == 'frozenset':
+    #     result = 'Frozenset'
+    #     return f"#<{result}>"
 
-    elif value.__class__.__name__ == 'enumerate':
-        result = 'Enumerate'
-        return f"#<{result}>"
+    # elif value.__class__.__name__ == 'enumerate':
+    #     result = 'Enumerate'
+    #     return f"#<{result}>"
 
-    elif value.__class__.__name__ == 'range':
-        result = 'Range'
-        return f"#<{result}>"
+    # elif value.__class__.__name__ == 'range':
+    #     result = 'Range'
+    #     return f"#<{result}>"
 
-    elif value.__class__.__name__ == 'frozenset':
-        result = 'Frozenset'
-        return f"#<{result}>"
+    # elif value.__class__.__name__ == 'frozenset':
+    #     result = 'Frozenset'
+    #     return f"#<{result}>"
 
     else:
         return f"#<{value.__class__.__name__}>"
@@ -407,7 +415,7 @@ def is_zero(__obj: object):
 def __clear_exec__():
     file = open("__exec__.moon", "w")
     file.write("")
-    
+
 def to_s(value) -> str:
     return str(value)
 
@@ -863,6 +871,7 @@ def TEST(func, print_or_return: str, catch_err: bool, *param):
     try:
         if print_or_return == "print":
             io.print(func(param))
+
         elif print_or_return == "return":
             return func(param)
         else:
@@ -873,7 +882,13 @@ def TEST(func, print_or_return: str, catch_err: bool, *param):
         else:
             raise e.__class__(e)
 
-def debug(): ... # todo: a debuger to print the line of this python, when it gets called, and an OK message
+def debug(expr):
+    try:
+        exec(expr)
+    except BaseException as e:
+        return Error(), Nil, e
+    else:
+        return "Ok", Nil
 
 # class Nil:
 #     def __repr__(self):
@@ -881,6 +896,22 @@ def debug(): ... # todo: a debuger to print the line of this python, when it get
 
 # Nil = Nil()
 
+class undefined_t:
+
+    def __repr__(self) -> str:
+        return "undefined"
+    
+    def __bool__(self):
+        return False
+    
+undefined = undefined_t()
+
+def div(a, b):
+    try:
+        return a / b
+    except ZeroDivisionError:
+        return undefined
+    
 class nil_t:
 
     _instance = None
@@ -892,7 +923,7 @@ class nil_t:
     
 
     def __repr__(self) -> str:
-        return "nil"
+        return "Nil"
     
     def __bool__(self):
         return False
@@ -932,6 +963,8 @@ NonePtr = ptr(None)
 def unreachable(msg = ""):
     assert False, msg
 
+__code__ = Nil
+
 with open(argv[1], "r") as file:
     lines = file.readlines()
 
@@ -949,16 +982,31 @@ with open(argv[1], "r") as file:
             elif ":=" in msg:
                 exec(f"{msg[:msg.index(":=")].strip()} = {msg[msg.index(":=")+2:].strip()}")
             
-            # elif msg.startswith("&"):
+            elif msg.startswith("&"):
+                BLOCK = ""
+                items = [lines[x] for x in range(i+1, len(lines))]
+                for k in range(len(items)):
+                    for n in items[k]:
+                        BLOCK += n
+                exec(f"{msg[msg.index("&")+1:]}{BLOCK[:BLOCK.index("end")]}")
 
-            # elif "C" in msg and "(" in msg:
-            #     BLOCK = ""
-            #     items = [lines[x] for x in range(i+1, len(lines))]
-            #     for k in range(len(items)):
-            #         for n in items[k]:
-            #             BLOCK += n
-            #     with open("__main__.c", "w") as f:
-            #         f.write(BLOCK[:BLOCK.index(") end")])
+            elif "CPP" in msg and "(" in msg:
+                BLOCK = ""
+                items = [lines[x] for x in range(i+1, len(lines))]
+                for k in range(len(items)):
+                    for n in items[k]:
+                        BLOCK += n
+                with open("__main__.cpp", "w") as f:
+                    f.write(BLOCK[:BLOCK.index(") end")])
+
+            elif "C" in msg and "(" in msg:
+                BLOCK = ""
+                items = [lines[x] for x in range(i+1, len(lines))]
+                for k in range(len(items)):
+                    for n in items[k]:
+                        BLOCK += n
+                with open("__main__.c", "w") as f:
+                    f.write(BLOCK[:BLOCK.index(") end")])
 
             elif "RB" in msg and "(" in msg:
                 BLOCK = ""
@@ -980,15 +1028,14 @@ with open(argv[1], "r") as file:
                     f.write(BLOCK[:BLOCK.index(") end")])
                 system("C:\\Users\\Lenovo\\Desktop\\me\\Lua\\lua.exe __main__.lua")
 
-            # elif "ASM" in msg and "(" in msg:
-            #     BLOCK = ""
-            #     items = [lines[x] for x in range(i+1, len(lines))]
-            #     for k in range(len(items)):
-            #         for n in items[k]:
-            #             BLOCK += n
-            #     with open("__main__.a", "w") as f:
-            #         f.write(BLOCK[:BLOCK.index(") end")])
-            #     system()
+            elif "ASM" in msg and "(" in msg:
+                BLOCK = ""
+                items = [lines[x] for x in range(i+1, len(lines))]
+                for k in range(len(items)):
+                    for n in items[k]:
+                        BLOCK += n
+                with open("__main__.s", "w") as f:
+                    f.write(BLOCK[:BLOCK.index(") end")])
 
             # elif "GO" in msg and "(" in msg:
             #     BLOCK = ""
@@ -998,17 +1045,15 @@ with open(argv[1], "r") as file:
             #             BLOCK += n
             #     with open("__main__.go", "w") as f:
             #         f.write(BLOCK[:BLOCK.index(") end")])
-            #     system("go run __main__.go")
                 
-            # elif "GLEAM" in msg and "(" in msg:
-            #     BLOCK = ""
-            #     items = [lines[x] for x in range(i+1, len(lines))]
-            #     for k in range(len(items)):
-            #         for n in items[k]:
-            #             BLOCK += n
-            #     with open("__main__.gleam", "w") as f:
-            #         f.write(BLOCK[:BLOCK.index(") end")])
-            #     system("gleam run __main__.gleam")
+            elif "GLEAM" in msg and "(" in msg:
+                BLOCK = ""
+                items = [lines[x] for x in range(i+1, len(lines))]
+                for k in range(len(items)):
+                    for n in items[k]:
+                        BLOCK += n
+                with open("__main__.gleam", "w") as f:
+                    f.write(BLOCK[:BLOCK.index(") end")])
                 
             elif "ZIG" in msg and "(" in msg:
                 BLOCK = ""
@@ -1040,6 +1085,32 @@ with open(argv[1], "r") as file:
 #                         pass
 #                     else:
 #                         raise NameError(e)
+            elif "var" in msg:
+                name = msg[msg.index("var")+3:msg.index("=")].strip()
+                value = msg[msg.index("=")+1:].strip()
+
+                if ":" in name: raise SyntaxError("type annotation is not allowed in var")
+                else:
+
+                    if "~>" in value:
+                        try:
+                            eval(msg[msg.index("=")+1:msg.index("~>")].strip())
+                        except NameError as e:
+                            continue
+                        else:
+                            exec(f"{name} = {msg[msg.index("=")+1:msg.index("~>")].strip()}({msg[msg.index("~>")+2:].strip()})")
+
+                    elif "fn" in value:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = lambda {msg[msg.index("(")+1:msg.index(")")].strip()}: {msg[msg.index("->")+2:].strip()}")
+
+                    elif "=>" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("=>")].strip()}({msg[msg.index("=>")+2:].strip()})")
+
+                    elif "<=" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("<=")].strip()}()")
+
+                    else:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:].strip()}")
 
             elif ">>" in msg or "<<" in msg:
                 exec(msg)
@@ -1056,6 +1127,14 @@ with open(argv[1], "r") as file:
             elif "<-" in msg and not "final" in msg and not "readonly" in msg and not "$" in msg and not "!" in msg:
                 exec(f"print({msg[:msg.index("<-")].strip()}())") if not "(" in msg and not ")" in msg else exec(f"print({msg[:msg.index("<-")].strip()})")
 
+            elif "~>" in msg:
+                try:
+                    eval(msg[msg.index("~>")+2:].strip())
+                except NameError as e:
+                    continue
+                else:
+                    exec(f"print({msg[:msg.index("~>")].strip()}({msg[msg.index("~>")+2:].strip()}))")
+
             elif msg.strip().endswith("!"):
                 exec(f"{msg[:msg.strip().index("!")]}")
 
@@ -1066,7 +1145,7 @@ with open(argv[1], "r") as file:
                 system(msg.strip()[msg.index("`")+1:-1].strip())
             
             elif msg.strip().endswith("?"):
-                print(f"{eval(msg[:msg.index('?')])}\n=> {CYAN}{BOLD}{nil}{BASE}")
+                print(f"{eval(msg[:msg.index('?')])}\n=> {CYAN}{BOLD}Ok, {Nil}{BASE}")
 
             elif msg.strip().startswith("@") and not "=" in msg:
                 BLOCK = ""
@@ -1080,17 +1159,24 @@ with open(argv[1], "r") as file:
 """
                 )
                     
-            elif "deprecated" in msg:
-                BLOCK = ""
-                items = [lines[x] for x in range(i+1, len(lines))]
-                for k in range(len(items)):
-                    for n in items[k]:
-                        BLOCK += n
-                exec(
-                    f"""
-{msg}{BLOCK[:BLOCK.index("end")]}
-"""
-                )
+#             elif "deprecated" in msg:
+#                 BLOCK = ""
+#                 items = [lines[x] for x in range(i+1, len(lines))]
+#                 for k in range(len(items)):
+#                     for n in items[k]:
+#                         BLOCK += n
+#                 exec(
+#                     f"""
+# {msg}{BLOCK[:BLOCK.index("end")]}
+# """
+#                 )
+
+            elif "putv" in msg:
+                key = msg[msg.index("putv")+4:].strip()
+                print(VARIABLES[key])
+
+            # elif "delete" in msg:
+                
 
             elif "static" in msg and "=" in msg:
                 exec(f"global {msg[msg.index("static")+6:msg.index("=")].strip()}; {msg[msg.index("static")+6:msg.index("=")].strip()} = {msg[msg.index("=")+1:].strip()}")
@@ -1343,9 +1429,9 @@ for {msg[msg.index("as")+2:msg.index(":")].strip()} in {msg[msg.index("with")+4:
 
             elif msg.startswith("$") and "=" in msg:
 
-                if msg[msg.index("$")+1:msg.index("=")].strip().isupper() or msg[msg.index("$")+1:msg.index("=")].strip()[0].isupper():
-                    if msg[msg.index("$")+1:msg.index("=")].strip() in __GLOBALS__.keys() or msg[msg.index("$")+1:msg.index("=")].strip() in __LOCALS__.keys():
-                        print(YELLOW + f"Warning: already initialized constant '{msg[msg.index("$")+1:msg.index("=")].strip()}'" + BASE)
+                # if msg[msg.index("$")+1:msg.index("=")].strip().isupper() or msg[msg.index("$")+1:msg.index("=")].strip()[0].isupper():
+                    # if msg[msg.index("$")+1:msg.index("=")].strip() in __GLOBALS__.keys() or msg[msg.index("$")+1:msg.index("=")].strip() in __LOCALS__.keys():
+                    #     print(YELLOW + f"Warning: already initialized constant '{msg[msg.index("$")+1:msg.index("=")].strip()}'" + BASE)
                         # raise Warning(YELLOW + f"Warning: already initialized constant '{msg[msg.index("$")+1:msg.index("=")].strip()}'" + BASE)
                     
                 if "->" in msg:
@@ -1744,12 +1830,21 @@ match {msg[msg.index("match")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
                 with open("undefined.log", "w") as f:
                     f.write(msg)
 
+            # try:
+            #     if __name__ == "__main__":
+            #         main()
+            # except NameError as e:
+            #     if "name main is not defined" in str(e):
+            #         pass
+            #     else:
+            #         raise NameError(e)
+
         except KeyboardInterrupt:
             print(UNDERLINE + 'Interrupt' + BASE)
 
         except BaseException as e:
             if msg.endswith("?"):
-                print(f"{RED}error in line {i+1} \n=> {e}{BASE}")
+                print(f"{RED}error in line {i+1} \n=> Error, {e}{BASE}")
                 continue
         
             type3 = f'File "{file}", in line {i+1}, in {BOLD}<main>{BASE}\n    {msg}\n    {'^' * len(msg.strip())}\n{e.__class__.__name__}: {e}\n'
@@ -1767,7 +1862,6 @@ match {msg[msg.index("match")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
 
             """
 
-
             ERR = f"#<{e.__class__.__name__}: {e}>"
             VARIABLES['$!'] = f"{e.__class__.__name__}: {e}"
 
@@ -1782,6 +1876,14 @@ match {msg[msg.index("match")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
             if e.__class__ == Warning:
                 # print(YELLOW + str(Warning("Warning: " + str(e) + BASE)))
                 print(e)
+
+            if e.__class__ == ZeroDivisionError:
+                def x(): return undefined
+                x()
+
+            if ERR is not None:
+                # __code__ = 0xdeadc0de
+                __code__ = hex(3735929054)
 
             print(new_type2)
 

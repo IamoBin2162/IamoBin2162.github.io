@@ -18,19 +18,6 @@
     # creating variables with lit
     set n to 8
     # creating variables with set and to
-    
-# Constants:
-they could be made like a normal variable, but they are either capitalized or uppercase !
-
-    $Func = (a, b) -> a + b
-    puts Func(2, 2)
-    # 4
-    $Func = (a, b) -> a - b
-    puts Func(2, 2)
-    # Warning: already initialized constant 'Func'
-    # 0
-
-and note that, if you change the value of a defined or declared constant, moon is going to show you ( or maybe we can say raise ) a warning ! but at the end, the value will be changed
 
 # lit
 this is a keyword to make a varaible, but this will be saved into VARIABLES dict!

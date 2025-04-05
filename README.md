@@ -948,9 +948,11 @@ you can use these ops with var
     var l_e = 5 le 5
     var i_n = Nil isnot Nil
     var i_i = Nil is Nil
+    var n_i = "h" notin "bye"
 
-say hi to a new op: __isnot__
-opposite of is
+say hi to a new ops: __isnot__ and __notin__
+isnot = is not
+notin = not in
 
 #### cast
 casting types
@@ -1251,6 +1253,13 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     | mirror   | copys an object to another one                                                                                |
     | sleep    | sleeps and waits for some seconds                                                                             |
     | wait     | sleeps and waits for some seconds                                                                             |
+    | isnot    | checks for not being an object                                                                                |
+    | notin    | checks for not being in an iterator                                                                           |
+    | cast     | cast types                                                                                                    |
+    | inc      | ++                                                                                                            |
+    | decr     | --                                                                                                            |
+    | macro    | as like as define                                                                                             |
+
 
 
 

@@ -97,7 +97,7 @@ keywords = [
     'match', 'todo', 'panic', 'when', 'foreach',  'add', 'sub', 'mult', 'div', 'pow', 'mod', 'xor', 'shr', 'shl', 'addr', 'type', 'struct', 'enum', 
     'say', 'eq', 'neq', 'gt', 'ge', 'lt', 'le', 'my', 'our', 'defer', 'END', 'discard', 'mut', 'package', 'auto', 'loop', 'lit', 'local', 'set', 
     'to', 'define', 'nonlocal', 'consume', 'static', 'forever', 'LUA', 'RB', 'ZIG', 'C', 'CPP', 'GLEAM', 'ASM', 'putv', 'var', 'fn', 'isnot', 
-    'cast', 'inc', 'decr', 'macro', 
+    'cast', 'inc', 'decr', 'macro', 'notin', 'also', 'before', 'after', 'perhaps', 'mirror', 'sleep', 'wait', 'mystery', 'nothing', 
 ]
 keywords.sort()
 
@@ -1207,6 +1207,9 @@ with open(argv[1], "r") as file:
 
                     elif "cast" in msg and "[" in msg and "]" in msg and "(" in msg and ")" in msg:
                         exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("[")+1:msg.index("]")]}({msg[msg.index("(")+1:msg.index(")")]})")
+
+                    elif "notin" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("notin")].strip()} not in {msg[msg.index("notin")+5:].strip()}")
 
                     else:
                         exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:].strip()}")

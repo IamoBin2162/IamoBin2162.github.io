@@ -97,7 +97,7 @@ keywords = [
     'match', 'todo', 'panic', 'when', 'foreach',  'add', 'sub', 'mult', 'div', 'pow', 'mod', 'xor', 'shr', 'shl', 'addr', 'type', 'struct', 'enum', 
     'say', 'eq', 'neq', 'gt', 'ge', 'lt', 'le', 'my', 'our', 'defer', 'END', 'discard', 'mut', 'package', 'auto', 'loop', 'lit', 'local', 'set', 
     'to', 'define', 'nonlocal', 'consume', 'static', 'forever', 'LUA', 'RB', 'ZIG', 'C', 'CPP', 'GLEAM', 'ASM', 'putv', 'var', 'fn', 'isnot', 
-    'cast', 
+    'cast', 'inc', 'decr', 'macro', 
 ]
 keywords.sort()
 
@@ -1270,7 +1270,13 @@ with open(argv[1], "r") as file:
                 time.sleep(float(msg[msg.index("sleep")+5:].strip()))
 
             elif "wait" in msg:
-                time.sleep(float(msg[msg.index("wait")+4:].strip()))                
+                time.sleep(float(msg[msg.index("wait")+4:].strip()))          
+
+            elif "inc" in msg:
+                exec(f"{msg[msg.index("inc")+3:].strip()} += 1")
+
+            elif "decr" in msg:
+                exec(f"{msg[msg.index("decr")+4:].strip()} -= 1")
 
             # elif "again" in msg:
             #     previous_line = lines[i-1]
@@ -1312,6 +1318,18 @@ with open(argv[1], "r") as file:
                     exec(
                         f"""
 def {msg[msg.index("define")+6:msg.index(")")+1]}: return {msg[msg.index(")")+1:].strip()}
+"""
+                    )
+
+                elif not "(" in msg and not ")" in msg:
+                    items = msg.split()
+                    exec(f"{items[1]} = {items[2]}")
+
+            elif "macro" in msg:
+                if "(" in msg and ")" in msg:
+                    exec(
+                        f"""
+def {msg[msg.index("macro")+5:msg.index(")")+1]}: return {msg[msg.index(")")+1:].strip()}
 """
                     )
 

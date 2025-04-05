@@ -920,6 +920,93 @@ creates a lambda function
                   are          not   for returning !
                   required     =>
 
+#### add, sub, etc.
+you can use these ops with var
+
+    var a = 5 add 5
+    var s = 5 sub 5
+    var m = 5 mult 5
+    var d = 5 div 5
+    var p = 5 pow 5
+    var m2 = 5 mod 5
+    var x = 5 xor 5
+    var s2 = 5 shr 5
+    var s3 = 5 shl 5
+    var e = 5 eq 5
+    var n = 6 neq 5
+    var g = 6 gt 5
+    var g_e = 6 ge 6
+    var l = 5 lt 6
+    var l_e = 5 le 5
+    var i_n = Nil isnot Nil
+    var i_i = Nil is Nil
+
+say hi to a new op: __isnot__
+opposite of is
+
+#### cast
+casting types
+
+    num := 1
+    var new_one = cast[bool](num)
+
+# cast
+a keyword that is available only with var
+
+    var new_value = cast[int](2.71)
+    # 2
+
+# nothing
+it represents nothingness
+
+# mystery
+represents a mystery value
+
+# @lazy
+lazy is a class that delays function evaluation until its value is accessed
+    
+    class Data:
+        @lazy
+        def show_my_number():
+            return 2162
+    end
+
+    obj := Data()
+    # here nothing has happened yet !
+    printf("%s", obj.show_my_number)!
+
+# freeze
+freezable is a class that makes an object then you can freeze it !
+
+    f := freezable("arg")
+    f.arg := "Hello"
+    printf(f.arg)!
+    f.freeze()!
+    # f.arg := "Bye"
+    # 👆🏻 here we have error ( uncomment it and run it to see )
+    # cause f is frozen
+
+# also
+evalutes two stmts after each other
+
+    printf("%s", Nil) also print(nil)
+
+# after
+evalutes the first stmt after the second stmt
+
+    printf("%s", Nil) after print(nil)
+
+# before
+evaluates the first stmt before the first stmt
+
+    printf("%s", Nil) before print(nil)
+
+# perhaps
+like maybe
+
+# sleep, wait
+sleeps and wait for some certain seconds
+
 # writing python code in moon
 
     <global boobooli>
@@ -1120,7 +1207,7 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     | lit      | creates a local variable, but a special one, LOOK AT THE END OF 'other things'                                |
     | local    | creates a loacl variable                                                                                      |
     | set      | creates a new variable; set STH to STH_ELSE                                                                   |
-    | to       |                                                           ...                                                 |
+    | to       | is used with set, mirror, consume,                                               |
     | define   | creates a new macro; so it can be function-like-macro or varaible-like-macro                                  |
     | nonlocal | declares a new variable which is a nonlocal; used in nested functions                                         |
     | consume  | swap value of variables; consume A to B                                                                       |
@@ -1135,6 +1222,16 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     | ASM      | gets a Asm code and does NOT run it                                                                           |
     | var      | creates a new variable, but with so many feathers                                                             |
     | fn       | is used in var, to make lambda functions                                                                      |
+    | nothing  | represents nothing :)                                                                                         |
+    | mystery  | represents a mystery value                                                                                    |
+    | also     | evaluates two stmts after each other                                                                          |
+    | after    | evaluates the first stmt after the second one                                                                 |
+    | before   | evaluates the second stmt after the fisrt one                                                                 |
+    | perhaps  | represents perhaps                                                                                            |
+    | mirror   | copys an object to another one                                                                                |
+    | sleep    | sleeps and waits for some seconds                                                                             |
+    | wait     | sleeps and waits for some seconds                                                                             |
+
 
 
 # Other Things:
@@ -1328,6 +1425,20 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     _ >> f"{p} -> {_ * p}"
     # prints p and defrenced version of p
     # but note that in pointers
+
+    with [2, 6, 1, 2] as num:
+        printf(to_s(num))
+        # 2
+        # 6
+        # 1
+        # 2
+    end
+
+    with open("somefile", "r") as f:
+        printf("%s", f)
+        # reads the whole file
+        # if i don't wanna lie, i don't know why is this reading the file !
+    end
 
     lit 5 = 6
     # don't worry, no error here

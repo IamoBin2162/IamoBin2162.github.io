@@ -36,6 +36,7 @@ type maybe = 0 | 1
 type unknown = 'unknown'
 type char = 'char'
 type HUGE_VAL = 'HUGE_VAL'
+type perhaps = maybe
 
 start = time.time()
 in_do = False
@@ -92,11 +93,11 @@ IO = IO()
 keywords = [
     'true', 'false', 'nil', 'module', 'alias', 'dec', 'def', 'if', 'elif', 'else', 'until', 'unless', 'class', 'switch', 'case', 'while', 'for',
     'try', 'except', 'finally', 'async', 'await', 'end', 'yield', 'pass', 'continue', 'break', 'is', 'in', 'raise', 'return', 'and', 'or',
-    'lambda', 'as', 'from', 'assert', 'del', 'global', 'not', 'with', 'puts', 'maybe', 'never', 'do', 'undef',
-    'True', 'False', 'import', 'None', 'match', 'todo', 'panic', 'when', 'foreach',  'add', 'sub', 'mult', 'div', 
-    'pow', 'mod', 'xor', 'shr', 'shl', 'addr', 'type', 'struct', 'enum', 'say', 'eq', 'neq', 'gt', 'ge', 'lt', 'le', 'my', 'our', 'defer',
-    'END', 'discard', 'mut', 'package', 'auto', 'loop', 'lit', 'local', 'set', 'to', 'define', 'nonlocal', 'consume', 'static',
-    'forever', 'LUA', 'RB', 'ZIG', 'C', 'CPP', 'GLEAM', 'ASM', 'putv', 'var', 'fn'
+    'lambda', 'as', 'from', 'assert', 'del', 'global', 'not', 'with', 'puts', 'maybe', 'never', 'do', 'undef', 'True', 'False', 'import', 'None', 
+    'match', 'todo', 'panic', 'when', 'foreach',  'add', 'sub', 'mult', 'div', 'pow', 'mod', 'xor', 'shr', 'shl', 'addr', 'type', 'struct', 'enum', 
+    'say', 'eq', 'neq', 'gt', 'ge', 'lt', 'le', 'my', 'our', 'defer', 'END', 'discard', 'mut', 'package', 'auto', 'loop', 'lit', 'local', 'set', 
+    'to', 'define', 'nonlocal', 'consume', 'static', 'forever', 'LUA', 'RB', 'ZIG', 'C', 'CPP', 'GLEAM', 'ASM', 'putv', 'var', 'fn', 'isnot', 
+    'cast', 
 ]
 keywords.sort()
 
@@ -963,6 +964,50 @@ NonePtr = ptr(None)
 def unreachable(msg = ""):
     assert False, msg
 
+class nothing_t:
+
+    def __repr__(self):
+        return ""
+
+    def __len__(self):
+        return 0
+
+nothing = nothing_t()
+
+class mystery_t:
+
+    def __repr__(self):
+        return "mystery"
+    
+mystery = mystery_t()
+
+class lazy:
+
+    def __init__(self, func):
+        self.func = func
+        self._value = None
+        self._evaluated = False
+
+    def __get__(self, instance, owner):
+        if not self._evaluated:
+            self._value = self.func(instance)
+            self._evaluated = True
+        return self._value
+
+class freezable:
+    def __init__(self, *args):
+        self._frozen = False
+        for arg in args:
+            setattr(self, arg, Nil)
+
+    def freeze(self):
+        self._frozen = True
+
+    def __setattr__(self, name, value):
+        if getattr(self, '_frozen', False) and name != '_frozen':
+            raise AttributeError(f"object is frozen")
+        super().__setattr__(name, value)
+
 __code__ = Nil
 
 with open(argv[1], "r") as file:
@@ -974,6 +1019,7 @@ with open(argv[1], "r") as file:
         file = file.strip()
 
         msg = lines[i]
+        __line__ = msg
 
         try:
             if "#" in msg:
@@ -1085,11 +1131,13 @@ with open(argv[1], "r") as file:
 #                         pass
 #                     else:
 #                         raise NameError(e)
+
             elif "var" in msg:
                 name = msg[msg.index("var")+3:msg.index("=")].strip()
                 value = msg[msg.index("=")+1:].strip()
 
                 if ":" in name: raise SyntaxError("type annotation is not allowed in var")
+
                 else:
 
                     if "~>" in value:
@@ -1108,6 +1156,57 @@ with open(argv[1], "r") as file:
 
                     elif "<=" in msg:
                         exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("<=")].strip()}()")
+
+                    elif "add" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("add")]}+{msg[msg.index("add")+3:]}")
+
+                    elif "sub" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("sub")]}-{msg[msg.index("sub")+3:]}")
+
+                    elif "div" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("div")]}/{msg[msg.index("div")+3:]}")
+
+                    elif "mult" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("mult")]}*{msg[msg.index("mult")+4:]}")
+
+                    elif "pow" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("pow")]}**{msg[msg.index("pow")+3:]}")
+
+                    elif "mod" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("mod")]}%{msg[msg.index("mod")+3:]}")
+
+                    elif "xor" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("xor")]}^{msg[msg.index("xor")+3:]}")
+
+                    elif "shr" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("shr")]}>>{msg[msg.index("shr")+3:]}")
+
+                    elif "shl" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("shl")]}<<{msg[msg.index("shl")+3:]}")
+                    
+                    elif "neq" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("neq")]} != {msg[msg.index("neq")+3:]}")
+
+                    elif "eq" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("eq")]} == {msg[msg.index("eq")+2:]}")
+
+                    elif "gt" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("gt")]} > {msg[msg.index("gt")+2:]}")
+
+                    elif "ge" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("ge")]} >= {msg[msg.index("ge")+2:]}")
+
+                    elif "lt" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("lt")]} < {msg[msg.index("lt")+2:]}")
+
+                    elif "le" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("le")]} <= {msg[msg.index("le")+2:]}")
+
+                    elif "isnot" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("isnot")]} is not {msg[msg.index("isnot")+5:]}")
+
+                    elif "cast" in msg and "[" in msg and "]" in msg and "(" in msg and ")" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("[")+1:msg.index("]")]}({msg[msg.index("(")+1:msg.index(")")]})")
 
                     else:
                         exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:].strip()}")
@@ -1147,17 +1246,47 @@ with open(argv[1], "r") as file:
             elif msg.strip().endswith("?"):
                 print(f"{eval(msg[:msg.index('?')])}\n=> {CYAN}{BOLD}Ok, {Nil}{BASE}")
 
-            elif msg.strip().startswith("@") and not "=" in msg:
-                BLOCK = ""
-                items = [lines[x] for x in range(i+1, len(lines))]
-                for k in range(len(items)):
-                    for n in items[k]:
-                        BLOCK += n
-                exec(
-                    f"""
-{msg}{BLOCK[:BLOCK.index("end")]}
-"""
-                )
+            elif "also" in msg:
+                first_one = msg[:msg.index("also")]
+                second_one = msg[msg.index("also")+4:]
+                exec(f"{first_one.strip()}; {second_one.strip()}")
+
+            elif "after" in msg:
+                first_one = msg[:msg.index("after")]
+                second_one = msg[msg.index("after")+5:]
+                exec(f"{second_one.strip()}; {first_one.strip()}")
+
+            elif "before" in msg:
+                first_one = msg[:msg.index("before")]
+                second_one = msg[msg.index("before")+6:]
+                exec(f"{first_one.strip()}; {second_one.strip()}")
+
+            elif "mirror" in msg:
+                from_what = msg[msg.index("mirror")+6:msg.index("to")]
+                to_what = msg[msg.index("to")+2:]
+                exec(f"{to_what.strip()} = {from_what.strip()}")
+
+            elif "sleep" in msg:
+                time.sleep(float(msg[msg.index("sleep")+5:].strip()))
+
+            elif "wait" in msg:
+                time.sleep(float(msg[msg.index("wait")+4:].strip()))                
+
+            # elif "again" in msg:
+            #     previous_line = lines[i-1]
+            #     mexec(previous_line)
+
+#             elif msg.strip().startswith("@") and not "=" in msg:
+#                 BLOCK = ""
+#                 items = [lines[x] for x in range(i+1, len(lines))]
+#                 for k in range(len(items)):
+#                     for n in items[k]:
+#                         BLOCK += n
+#                 exec(
+#                     f"""
+# {msg}{BLOCK[:BLOCK.index("end")]}
+# """
+#                 )
                     
 #             elif "deprecated" in msg:
 #                 BLOCK = ""
@@ -1173,10 +1302,7 @@ with open(argv[1], "r") as file:
 
             elif "putv" in msg:
                 key = msg[msg.index("putv")+4:].strip()
-                print(VARIABLES[key])
-
-            # elif "delete" in msg:
-                
+                print(VARIABLES[key])                
 
             elif "static" in msg and "=" in msg:
                 exec(f"global {msg[msg.index("static")+6:msg.index("=")].strip()}; {msg[msg.index("static")+6:msg.index("=")].strip()} = {msg[msg.index("=")+1:].strip()}")
@@ -1408,7 +1534,7 @@ while {msg[msg.index("until")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
                 for k in range(len(items)):
                     for n in items[k]:
                         BLOCK += n
-                exec(
+                print(
                     f"""
 for {msg[msg.index("as")+2:msg.index(":")].strip()} in {msg[msg.index("with")+4:msg.index("as")].strip()}:
     {BLOCK[:BLOCK.index("end")]}
@@ -1876,6 +2002,18 @@ match {msg[msg.index("match")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
             if e.__class__ == Warning:
                 # print(YELLOW + str(Warning("Warning: " + str(e) + BASE)))
                 print(e)
+
+            if "object of type 'mystery_t' has no len()" in str(e):
+                new_type2 = f"""
+{e.__class__.__name__}: {e}; {CYAN}mystery is mystery :){BASE}
+
+    ┌─ {__FILE__}: {i+1}
+    │
+    │  {msg.strip()}
+    │  {'^' * len(msg.strip())}  here
+    
+
+            """
 
             if e.__class__ == ZeroDivisionError:
                 def x(): return undefined

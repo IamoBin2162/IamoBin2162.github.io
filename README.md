@@ -459,12 +459,20 @@ creates an infinite loop
     end
 
 # macro
-macros can be define by define keyword
+macros can be define by define or macro keyword
 
     define __my_macro(a, b) a if a < b else b
     # func-like macro
     define magic_number 2162
     # var
+
+    macro __my(a, b) a if a < b else b
+    # func-like macro
+    puts __my(4, 8)
+
+    macro number 0xaa
+    # var-like macro
+    puts number
 
 # consume
 moves a value to a new variable, leaving the original variable empty
@@ -949,6 +957,18 @@ casting types
 
     num := 1
     var new_one = cast[bool](num)
+
+# inc, decr
+inc is ++
+decr is --
+
+    num := 5
+    inc num
+    puts num
+    # 6
+    decr num
+    puts num
+    # 5
 
 # cast
 a keyword that is available only with var

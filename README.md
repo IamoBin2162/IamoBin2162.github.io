@@ -950,8 +950,8 @@ you can use these ops with var
     var i_i = Nil is Nil
     var n_i = "h" notin "bye"
 
-say hi to a new ops: __isnot__ and __notin__
-isnot = is not
+say hi to a new ops: __isnot__ and __notin__\
+isnot = is not\
 notin = not in
 
 #### cast
@@ -960,8 +960,25 @@ casting types
     num := 1
     var new_one = cast[bool](num)
 
+#### pipeline (|>)
+you can use them as you could in the module-level
+
+    var p = Nil |> io.sprint
+    puts p
+
+#### ~=, ===
+for comparison
+
+~= checks for loose equality
+=== checks for strict equality
+
+    num := 5
+
+    var compar = 5.4 ~= 5
+    var compar2 = num === 5
+    
 # inc, decr
-inc is ++
+inc is ++\
 decr is --
 
     num := 5
@@ -1028,6 +1045,21 @@ like maybe
 
 # sleep, wait
 sleeps and wait for some certain seconds
+
+    sleep 5
+    # 5s
+
+    wait 5
+    # 5s
+
+# lable, goto
+we can define a lable and just use it in the future by goto
+
+    lable here:
+        printf("Hello")
+    end
+
+    goto here
 
 # writing python code in moon
 
@@ -1229,7 +1261,7 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     | lit      | creates a local variable, but a special one, LOOK AT THE END OF 'other things'                                |
     | local    | creates a loacl variable                                                                                      |
     | set      | creates a new variable; set STH to STH_ELSE                                                                   |
-    | to       | is used with set, mirror, consume,                                               |
+    | to       | is used with set, mirror, consume,                                                                            |
     | define   | creates a new macro; so it can be function-like-macro or varaible-like-macro                                  |
     | nonlocal | declares a new variable which is a nonlocal; used in nested functions                                         |
     | consume  | swap value of variables; consume A to B                                                                       |

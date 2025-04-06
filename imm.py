@@ -97,7 +97,8 @@ keywords = [
     'match', 'todo', 'panic', 'when', 'foreach',  'add', 'sub', 'mult', 'div', 'pow', 'mod', 'xor', 'shr', 'shl', 'addr', 'type', 'struct', 'enum', 
     'say', 'eq', 'neq', 'gt', 'ge', 'lt', 'le', 'my', 'our', 'defer', 'END', 'discard', 'mut', 'package', 'auto', 'loop', 'lit', 'local', 'set', 
     'to', 'define', 'nonlocal', 'consume', 'static', 'forever', 'LUA', 'RB', 'ZIG', 'C', 'CPP', 'GLEAM', 'ASM', 'putv', 'var', 'fn', 'isnot', 
-    'cast', 'inc', 'decr', 'macro', 'notin', 'also', 'before', 'after', 'perhaps', 'mirror', 'sleep', 'wait', 'mystery', 'nothing', 
+    'cast', 'inc', 'decr', 'macro', 'notin', 'also', 'before', 'after', 'perhaps', 'mirror', 'sleep', 'wait', 'mystery', 'nothing', 'undefined', 
+    'unknown', 'Nil', 'HUGE_VAL', 
 ]
 keywords.sort()
 
@@ -595,6 +596,29 @@ def any(value):
 def error(m):
     return Error(m)
 
+pi = math.pi
+
+def append(object, to_add):
+    object += to_add
+    return object
+
+def split(string, with_what):
+    return string.split(with_what)
+
+def leq(a, b):
+    # loose equl
+    if type(a) in [int, float] and type(b) in [int, float]:
+        return round(a) == round(b)
+    
+    else:
+        return a == b
+
+def seq(a, b):
+    # strict equla
+    if type(a) == type(b) and a == b and ptr(a) == ptr(b) and id(a) == id(b):
+        return True
+    return False
+
 class io:
 
     def print(*values, sep="\t"):
@@ -819,6 +843,12 @@ class io:
         VARIABLES['$>'] = format % values
         print(VARIABLES[format % values])
 
+    def warn(msg=""):
+        raise Warning(msg)
+    
+    def error(__type, msg):
+        raise __type(msg)
+
 
 class Imaginary(complex):
     ...
@@ -1008,6 +1038,7 @@ class freezable:
             raise AttributeError(f"object is frozen")
         super().__setattr__(name, value)
 
+lable_names = []
 __code__ = Nil
 
 with open(argv[1], "r") as file:
@@ -1211,6 +1242,31 @@ with open(argv[1], "r") as file:
                     elif "notin" in msg:
                         exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("notin")].strip()} not in {msg[msg.index("notin")+5:].strip()}")
 
+                    elif "|>" in msg:
+                        items = msg[msg.index("=")+1:].split("|>")
+                        for index in range(len(items)):
+                            items[index] = items[index].strip()
+                        items.reverse()
+                        result = ""
+                        count = 0
+                        for each_elem in items:
+                            count += 1
+                            if count == len(items):
+                                result += each_elem
+                            else:
+                                result += each_elem + "("
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")+1].strip()}{result + ")" * (count - 1)}")
+
+                    elif "~=" in msg:
+                        first_one = msg[msg.index("=")+1:msg.index("~=")].strip()
+                        second_one = msg[msg.index("~=")+2:].strip()
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()}leq({first_one}, {second_one})")
+
+                    elif "===" in msg:
+                        first_one = msg[msg.index("=")+1:msg.index("===")].strip()
+                        second_one = msg[msg.index("===")+3:].strip()
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()}seq({first_one}, {second_one})")
+
                     else:
                         exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:].strip()}")
 
@@ -1280,6 +1336,29 @@ with open(argv[1], "r") as file:
 
             elif "decr" in msg:
                 exec(f"{msg[msg.index("decr")+4:].strip()} -= 1")
+
+            elif "lable" in msg and ":" in msg:
+                BLOCK = ""
+                items = [lines[x] for x in range(i+1, len(lines))]
+                for k in range(len(items)):
+                    for n in items[k]:
+                        BLOCK += n
+                lable_names.append(msg[msg.index("lable")+5:msg.index(":")].strip())
+                exec(
+                    f"""
+def {msg[msg.index("lable")+5:msg.index(":")].strip()}():
+    {BLOCK[:BLOCK.index("end")]}
+"""
+                )
+
+            elif "goto" in msg:
+                name = msg[msg.index("goto")+4:].strip()
+                if name in lable_names:
+                    exec(f"{name}()")
+                
+                else:
+                    raise NameError(f"{name} is not defined")
+
 
             # elif "again" in msg:
             #     previous_line = lines[i-1]
@@ -2021,8 +2100,8 @@ match {msg[msg.index("match")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
                 continue
 
             if e.__class__ == Warning:
-                # print(YELLOW + str(Warning("Warning: " + str(e) + BASE)))
-                print(e)
+                print(YELLOW + str(Warning("Warning: " + str(e) + BASE)))
+                continue
 
             if "object of type 'mystery_t' has no len()" in str(e):
                 new_type2 = f"""

@@ -1041,6 +1041,7 @@ class freezable:
 lable_names = []
 __code__ = Nil
 
+
 with open(argv[1], "r") as file:
     lines = file.readlines()
 

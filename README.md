@@ -976,7 +976,7 @@ for comparison
 
     var compar = 5.4 ~= 5
     var compar2 = num === 5
-    
+
 # inc, decr
 inc is ++\
 decr is --
@@ -1289,11 +1289,10 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     | notin    | checks for not being in an iterator                                                                           |
     | cast     | cast types                                                                                                    |
     | inc      | ++                                                                                                            |
-    | decr     | --                                                                                                            |
+    | decr     | --       note: dec is not dec                                                                                 |
     | macro    | as like as define                                                                                             |
-
-
-
+    | lable    | creates a new lable                                                                                           |
+    | goto     | is used to go to a lable
 
 # Other Things:
 

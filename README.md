@@ -1252,11 +1252,18 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     | panic    | is used to panic when the code reaches where it shouldn't have been                                           |
     | when     | is just if                                                                                                    |
     | foreach  | for each element in an iterator do sth                                                                        |
-    | add      | add op (+)                                                                                                    |
-    | sub      | sub op (-)                                                                                                    |
-    | mult     | mult op (*)                                                                                                   |
-    | div      | div op (/)                                                                                                    |
-    | pow      | pow op (**)                                                                                                   |
+    | add      | at var: add op (+)                                                                                            |
+    | sub      | at var: sub op (-)                                                                                            |
+    | mult     | at var: mult op (*)                                                                                           |
+    | div      | at var: div op (/)                                                                                            |
+    | pow      | at var: pow op (**)                                                                                           |
+    | sqrt     | at var: square root                                                                                           |
+    | cbrt     | at var: cube root                                                                                             |
+    | sin      | at var: sin of a radian                                                                                       |
+    | cos      | at var: cos of a radian                                                                                       |
+    | tan      | at var: tan of a radian                                                                                       |
+    | log      | at var: log in base 10                                                                                        |
+    | ln       | at var: log in base e ( natural log )                                                                         |
     | mod      | mod op (%)                                                                                                    |
     | xor      | xor op (^)                                                                                                    |
     | shr      | right shift op (>>)                                                                                           |

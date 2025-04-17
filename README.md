@@ -874,12 +874,22 @@ it is just like if
     end
 
 # &
-when you start a line with &, you tell moon that you will have a block (a bunch or lines of code)
+when you start a line with &, you tell moon that you will have a block (a bunch or lines of code); DO NOT FORGET 'end'
 
     &print(
         "hi",
         "bye"
     ) end
+
+    &values = {
+        0,
+        1,
+        2,
+    } end
+
+    # without &, you would get an error
+
+    puts values
 
 # putv
 it is for printing the value of lit variables
@@ -949,6 +959,13 @@ you can use these ops with var
     var i_n = Nil isnot Nil
     var i_i = Nil is Nil
     var n_i = "h" notin "bye"
+    var s = sin pi
+    var c = cos pi
+    var t = tan pi
+    var sq = sqrt 4
+    var cb = cbrt 8
+    var l = log 10
+    var nl = ln e
 
 say hi to a new ops: __isnot__ and __notin__\
 isnot = is not\
@@ -976,6 +993,12 @@ for comparison
 
     var compar = 5.4 ~= 5
     var compar2 = num === 5
+
+#### div by zero
+
+    var divByZero = 1 / 0
+    puts divByZero
+    # undefined
 
 # inc, decr
 inc is ++\

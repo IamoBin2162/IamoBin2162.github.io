@@ -862,7 +862,13 @@
 # puts __my_macro(8, 6)
 
 # define magic_number 2162
-# puts magic_number
+# puts 
+
+# macro __my(a, b) a if a < b else b
+# puts __my(4, 8)
+
+# macro number 0xaa
+# puts number
 
 # a := 0
 # b := 1
@@ -891,8 +897,6 @@
 #     printf("Hi")
 # end
 
-# ---------------------------------------------------------------------------
-
 # RB (
 
 #     p "Hello, World"
@@ -914,7 +918,57 @@
 
 # ) end
 
-# ---------------------------------------------------------------------------
+# C (
+#     #include <stdio.h>
+
+#     int main() {
+#         printf("Hello, World");
+        
+#         return 0;
+#     }
+
+# ) end
+
+# ASM (
+
+#     section .data
+
+# ) end
+
+# Go (
+#     package main
+#     import "fmt"
+
+#     func main() {
+#         fmt.Println("Hello")
+#     }
+
+# ) end
+
+# GLEAM (
+
+#     import gleam/io
+
+#     pub fn main() {
+
+        # io.print("Hello, World")
+
+        # Nil
+
+#     }
+
+# ) end
+
+# CPP (
+#     #include <iostream>
+
+#     int main() {
+#         std::cout << "Hello, World";
+
+#         return 0;
+#     }
+
+# ) end
 
 # puts Nil, NilPtr, NonePtr
 
@@ -922,4 +976,165 @@
 # panic as "Not hereeeeee!"
 # todo as "Complete here"
 
+# &print(
+#     "hi",
+#     "bye"
+# ) end
 
+# lit 5 = 6
+# putv 5
+
+# while 1:
+
+#     io.print("moon> ")
+#     __input = input()
+
+#     if __input == "cls":
+#         system("cls")
+
+#     elif __input == "exit":
+#         break
+
+#     else:
+#         mexec(__input)
+
+# end
+
+# printf("%s", type(div(8, 0)))!
+
+# typeof ~> Nil
+
+# num := 1.5
+
+# var res = typeof ~> Nil
+# var func = fn (name) -> printf(f"Hello {name}")
+# var call = print => "Hello"
+# var call = int <=
+# var name = "Mobin"
+# var a = 5 add 5
+# var s = 5 sub 5
+# var m = 5 mult 5
+# var d = 5 div 5
+# var p = 5 pow 5
+# var m2 = 5 mod 5
+# var x = 5 xor 5
+# var s2 = 5 shr 5
+# var s3 = 5 shl 5
+# var e = 5 eq 5
+# var n = 6 neq 5
+# var g = 6 gt 5
+# var g_e = 6 ge 6
+# var l = 5 lt 6
+# var l_e = 5 le 5
+# var i_n = Nil isnot Nil
+# var i_i = Nil is Nil
+# var new_val = cast[int](num)
+# var n_i = "h" notin "bye"
+# var p = Nil |> io.sprint
+# var compar = 5.4 ~= 5
+# var compar2 = num === 1.5
+# var s = sin pi
+# var c = cos pi
+# var t = tan pi
+# var sq = sqrt 4
+# var cb = cbrt 8
+# var l = log 10
+# var nl = ln e
+
+
+# puts nothing
+
+# with [2, 6, 1, 2] as num:
+#     printf(to_s(num))
+# end
+
+# with open("fmt.py", "r") as f:
+#     printf("%s", f)
+# 	  - WTF ?! 
+#     + IDK :)
+# end
+
+# puts mystery
+
+# var m = mystery
+# puts m
+
+# f := freezable("arg")
+# f.arg := "Hello"
+# printf(f.arg)!
+# f.freeze()!
+# f.arg := "Bye"
+
+# printf("%s", Nil) also print(nil)
+
+# printf("%s", Nil) after print(nil)
+
+# printf("%s", Nil) before print(nil)
+
+# puts perhaps
+
+# d := {0, 1}
+# mirror d to new_d
+# puts new_d
+
+# sleep 5
+# wait 5
+
+# num := 5
+# inc num
+# puts num
+# decr num
+# puts num
+
+# io.warn("A Warning")!
+# io.error(NameError, "An error")!
+
+# puts append("Hello", ", World")
+
+# puts leq(2.4, 2)
+# puts leq(pi, 3)
+# puts leq(pi, 3.14)
+
+# puts seq(pi, 3.14)
+
+# lable here:
+# 	printf("Hello")
+# end
+# goto here
+
+# puts bytecode("num = 0")
+
+# lit 💀 = 5
+# lit 🖤 = 0
+# io.vprintln('💀')!
+# io.vprintln('🖤')!
+
+# var_dump(i + 1)!
+
+# require("this")!
+
+# from icecream import ic!
+# ic("Hello")!
+
+# puts __code__
+# hello()!
+# puts __code__
+# puts ERR
+
+# var divByZero = 1 / 0
+# var ByZero = 1 div 0
+# puts divByZero, ByZero
+
+# puts INFO
+
+# var V = {}
+# var value = "Mobin"
+# V[ptr(value)] = value!
+# puts V
+
+# &values = {
+# 	0,
+# 	1,
+# 	2,
+# } end
+# puts values

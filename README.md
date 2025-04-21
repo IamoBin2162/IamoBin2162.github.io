@@ -6,6 +6,8 @@
     # this makes 'name' variable
     grade = 'A'!
     # normal one
+    <time = 5>
+    # with <>
     number := 5
     # another way to create a variable, it's by :=
     my number = 0
@@ -18,6 +20,16 @@
     # creating variables with lit
     set n to 8
     # creating variables with set and to
+    @name = "Mobin"
+    # class variable that is created in __main__ class
+    static num = 0
+    # global variable
+    global n
+    n = 5
+    # another global
+    auto thing = [0, 1]
+    # auto type choose
+    # no diffrence, cause Python usually doesn't care about types
 
 # lit
 this is a keyword to make a varaible, but this will be saved into VARIABLES dict!
@@ -85,6 +97,13 @@ moon is a object-oriented programming language
     # you can also call this function (that takes no param) like this:
     # say_hello => 
     # but as i said, it does not print the result !
+
+    'printf "Hello"
+    # this is OK
+    # but only for the callings that needs at least one argument not more !
+    # 'printf "Hello", "World"
+    # not OK
+    # note that for this one, it needs to be started with '
 
 # if - elif - else:
 
@@ -881,6 +900,9 @@ when you start a line with &, you tell moon that you will have a block (a bunch 
         "bye"
     ) end
 
+    # ---------------------------
+
+
     &values = {
         0,
         1,
@@ -890,6 +912,105 @@ when you start a line with &, you tell moon that you will have a block (a bunch 
     # without &, you would get an error
 
     puts values
+
+    # ---------------------------
+
+    &def person(
+        name: str,
+        age: int,
+        city: str,
+    ) -> str:
+        return f"{name} is {age} years old that lives in {city}"
+    end
+
+    # suppose you are a fan of type annotation (fuck type annotation), or you wanna write functions as Python recommends you can do
+
+    puts person("mobin", 17, "Urmia")
+
+# private functions
+you can make private functions not only in classes and even in module-level
+
+    class pub_and_priv:
+
+        def pub(self):
+            return "pub"
+        
+        @visibility.private
+        def priv(self):
+            return "priv"
+
+        def another_pub(self):
+            return "another pub"
+
+    end
+
+    $pp = pub_and_priv()
+    puts pp.pub()
+    puts pp.another_pub()
+    # puts pp.priv()
+    # error
+
+#### note that only that function that is given to visibility.private is private, else are public (except for __SOME_NAME that Python itself sees them as private)
+
+    @visibility.private()
+    def pr():
+        print("Hello")
+    end
+    
+    # pr()!
+    # error
+
+# expect
+it is a class that has some functions
+
+    expect(5).toBeEqualTo(8)
+    # False
+
+    expect(5).toBeGreaterThan(8)
+    # False
+
+    expect(5).toBeLessThan(8)
+    # True
+
+    expect(5).toBeGreterEqualTo(8)
+    # False
+
+    expect(5).toBeLessEqualTo(8)
+    # True
+
+    expect(5).toBeNotEqualTo(8)
+    # True
+
+    expect(5).toBeIn([2, 5, 3])
+    # True
+
+    expect(5).toBeNotIn([2, 3])
+    # True
+
+# channels
+if you've ever programmed in Go, you know what channels are
+
+    chan.send("Hello, World")!
+    chan.send("Hello")!
+    chan.send("Bye")!
+    print(chan.is_empty())!
+    print(chan.size())!
+    print(chan.get())!
+    print(chan.size())!
+    print(chan.get())!
+    print(chan.get())!
+    print(chan.size())!
+    print(chan.is_empty())!
+    print(chan.is_full())!
+    chan.close()!
+    chan.send("hi")!
+    # error
+    # be aware that when you close a channel, sending and getting values cause Error
+
+    # chan.send sends a value to a channel
+    # chan.get gets and removes the last element (if exisits) and returns it
+    # chan.is_empty and chan.is_full checks for emptyness and fullness of that channel
+    # chan.size returns the size of the channel
 
 # putv
 it is for printing the value of lit variables
@@ -901,9 +1022,9 @@ it is for printing the value of lit variables
 # ~> 
 this is called, soft-calling that is used for calling functions and methods
 but why soft?
-because it first check that the given param(s) is(are) (a) valid thing(s) or not !
-if it is, prints the result of calling it
-if it is not, passes so __softly__
+because it first checks that the given param(s) is(are) (a) valid thing(s) or not !
+if it(they) is(are), prints the result of calling it
+if it(they) is not(are not), passes so __softly__
 
     typeof ~> Nil
     # #<Nil>
@@ -939,7 +1060,7 @@ creates a lambda function
                   required     =>
 
 #### add, sub, etc.
-you can use these ops with var
+you can use these ops and etc. with var
 
     var a = 5 add 5
     var s = 5 sub 5
@@ -966,10 +1087,27 @@ you can use these ops with var
     var cb = cbrt 8
     var l = log 10
     var nl = ln e
+    var c = 4 <=> 5
+    var short_hand = 5 < 4 ? True : False
+    var d = printf("Hello") ?? "Error"
+    # if the left has errors returns right else passes
+    var block = do
+        name = "Mobin"
+        printf("Hello")
+        printf(f"Hello {name}")
+        printf("Bye")
+    end
+    var a = await 2 printf("Hello")
+    # await in var-level
+    # but syntax in not as async-function-level
+    # it gets two things: a number (seconds) to delay, then a work to do
+    var r = 0 through 10
+    var ar = 'a' through 'e'
 
-say hi to a new ops: __isnot__ and __notin__\
+
+say hi to new ops: __isnot__ and __notin__\
 isnot = is not\
-notin = not in
+notin = not in  
 
 #### cast
 casting types
@@ -1322,7 +1460,8 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     | decr     | --       note: dec is not dec                                                                                 |
     | macro    | as like as define                                                                                             |
     | lable    | creates a new lable                                                                                           |
-    | goto     | is used to go to a lable
+    | goto     | is used to go to a lable                                                                                      |
+    | through  | is used to make Ranges                                                                                        |
 
 # Other Things:
 

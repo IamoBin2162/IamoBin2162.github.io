@@ -1040,7 +1040,18 @@
 # var cb = cbrt 8
 # var l = log 10
 # var nl = ln e
-
+# var c = 4 <=> 5
+# var short_hand = 5 < 4 ? True : False
+# var d = printf("Hello") ?? "Error"
+# var block = do
+# 	name = "Mobin"
+# 	printf("Hello")
+# 	printf(f"Hello {name}")
+# 	printf("Bye")
+# end
+# var a = await 2 printf("Hello")
+# var r = 0 through 10
+# var ar = 'a' through 'e'
 
 # puts nothing
 
@@ -1138,3 +1149,79 @@
 # 	2,
 # } end
 # puts values
+
+# main := freezable("main")
+# main.freeze()!
+# main.value = Nil!
+
+# &def person(
+#         name: str,
+#         age: int,
+#         city: str,
+# ) -> str:
+#         return f"{name} is {age} years old that lives in {city}"
+# end
+
+# puts person("mobin", 17, "Urmia")
+
+# class pub_and_priv:
+# 	def pub(self):
+# 		return "pub"
+	
+# 	@visibility.private
+# 	def priv(self):
+# 		return "priv"
+# end
+# $pp = pub_and_priv()
+# puts pp.pub()
+# # puts pp.priv()
+# # error
+
+# @deprecated("use new function")
+# def old():
+#     print("old")
+# end
+# def new():
+#     print("new")
+# end
+# old()!
+
+# 'printf "Hello"
+
+# chan.send("Hello, World")!
+# chan.send("Hello")!
+# chan.send("Bye")!
+# print(chan.is_empty())!
+# print(chan.size())!
+# print(chan.get())!
+# print(chan.size())!
+# print(chan.get())!
+# print(chan.get())!
+# print(chan.size())!
+# print(chan.is_empty())!
+# print(chan.is_full())!
+# chan.close()!
+
+# @name = "Mobin"
+# puts __main__.name
+
+# struct enum namespace interface
+
+# namespace block:
+# 	def greet():
+# 		print("Hello")
+# end
+# b = block!
+# b.greet()!
+
+# interface animal:
+# 	sound: None
+# end
+
+# class cat(animal):
+# 	def sound():
+# 		return "meow"
+# end
+
+# my_pet = cat!
+# puts my_pet.sound()

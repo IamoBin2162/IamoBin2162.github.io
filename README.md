@@ -1103,11 +1103,14 @@ you can use these ops and etc. with var
     # it gets two things: a number (seconds) to delay, then a work to do
     var r = 0 through 10
     var ar = 'a' through 'e'
+    var contains = [0, 1] has 2
+    var contains2 = [0, 1] lacks 2
 
-
-say hi to new ops: __isnot__ and __notin__\
+say hi to new ops: __isnot__, __notin__, __has__, __lacks__\
 isnot = is not\
-notin = not in  
+notin = not in\
+has = in\
+lacks = not in
 
 #### cast
 casting types
@@ -1186,6 +1189,45 @@ freezable is a class that makes an object then you can freeze it !
     # 👆🏻 here we have error ( uncomment it and run it to see )
     # cause f is frozen
 
+# undo, redo
+undoable is a class that makes an objetc then you can travel at time and get previous value
+
+    state := undoable({"c": 0})
+    state["c"] = 1!
+    state["c"] = 2!
+    print(state)!
+    state.undo()!
+    print(state)!
+    state.undo()!
+    print(state)!
+    state.redo()!
+    print(state)!
+
+# again
+exectes the last line (not block) again
+
+    puts "hi"
+    again
+    # hi
+    # hi
+
+# block
+block makes a block then in the future you can run it
+
+    block b:
+        printf("Hello")
+    end
+    does b
+
+# does
+as you saw in the last example, does is used to run the blocks
+
+    block b:
+        printf("Hello")
+    end
+    does b
+    # Hello
+
 # also
 evalutes two stmts after each other
 
@@ -1221,6 +1263,48 @@ we can define a lable and just use it in the future by goto
     end
 
     goto here
+
+# awaitfor
+it is a syntax sugar (maybe we can call it that)
+
+    2 awaitfor printf("Hello")
+    # translates to: (Python)
+    
+    # async def __RAND_NAME__():
+    #    await asyncio.sleep(2)
+    #    printf("Hello")
+    # asyncio.run(__RAND_NAME__())
+
+    # that __RAND_NAME__ is a random name that moon makes
+    
+# fixme
+this is used for telling the coder that that line or maybe that block
+
+    fixme as "This code needs your fix to be ran"
+
+# some new types
+
+    si := short_int(32767)
+    # (-32768, 32767]
+
+    usi := ushort_int(65535)
+    # (0, 65535]
+
+    ui := unsigned_int(4294967295)
+    # (0, 4294967295]
+
+    li := long_int(2147483647)
+    # (-2147483648, 2147483647]
+
+    uli := ulong_int(4294967295)
+    # (0, 4294967295]
+
+    lli := long_long_int(2**63)
+    # (-(2**63), (2**63)]
+
+    ulli := ulong_long_int(18446744073709551615)
+    # (0, 18446744073709551615]
+
 
 # writing python code in moon
 
@@ -1457,11 +1541,21 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     | notin    | checks for not being in an iterator                                                                           |
     | cast     | cast types                                                                                                    |
     | inc      | ++                                                                                                            |
-    | decr     | --       note: dec is not dec                                                                                 |
+    | decr     | --       note: decr is not dec                                                                                |
     | macro    | as like as define                                                                                             |
     | lable    | creates a new lable                                                                                           |
     | goto     | is used to go to a lable                                                                                      |
     | through  | is used to make Ranges                                                                                        |
+    | namespace| is used for making namespaces                                                                                 |
+    | interface| is used for making interfaces                                                                                 |
+    | again    | is used for redoing the last line                                                                             |
+    | block    | is used for creating blocks                                                                                   |
+    | does     | is used for running blocks                                                                                    |
+    | awaitfor | is a syntax sugar for async functions                                                                         |
+    | ensure   | just like assert                                                                                              |
+    | fixme    | is used to tell the coder that the code needs fix at a line or maybe block!                                   |
+    | has      | is like in keyword                                                                                            |
+    | lacks    | is like notin                                                                                                 |
 
 # Other Things:
 
@@ -1606,7 +1700,6 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     puts result2
     # error: result2 is not defined !
 
-
     $pointers = {}
     class io:
 
@@ -1640,7 +1733,7 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     _ >> (_ << ">>> ")
     # printing the gotten input from user with <<
     _ >> (_ & 7)
-    # printing pointer of 7 ! (&7 in C or sth)
+    # printing pointer of 7 ! (&7)
     _ >> (_ * (_ & 7))
     # printing the derefrenced pointer of 7
     # _ >>   ( _ * (        _ & 7 ) )
@@ -1668,6 +1761,18 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
         # reads the whole file
         # if i don't wanna lie, i don't know why is this reading the file !
     end
+
+    puts hello
+    if ERR is not None:
+        printf(ERR)
+    end
+    if not ok:
+        printf(ERR)
+    end
+
+    require t
+    include t
+    # run these to see the diffrence
 
     lit 5 = 6
     # don't worry, no error here

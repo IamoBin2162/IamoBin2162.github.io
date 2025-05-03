@@ -16,6 +16,20 @@ from collections import namedtuple
 # from warnings import deprecated
 import re
 from collections import Counter
+import dis
+from difflib import SequenceMatcher
+from typing import Final
+import functools
+import warnings
+import asyncio
+import queue
+import threading
+from dataclasses import dataclass
+import string
+from icecream import ic
+
+def bytecode(src):
+    return dis.dis(compile(src, '<string>', 'exec'))
 
 def ptr(n):
     return hex(id(n))
@@ -58,7 +72,7 @@ stdin = sys.stdin
 stderr = sys.stderr
 argv = sys.argv
 __FILE__ = argv[1]
-__VERSION__ = f"moon v3"
+__VERSION__ = 4
 __LOCALS__ = locals()
 __GLOBALS__ = globals()
 __NAME__ = __name__
@@ -76,7 +90,7 @@ VARIABLES['$<'] = None
 VARIABLES['$#'] = len
 global ERR
 ERR = None
-ok = ERR
+ok = not ERR
 Any = object()
 self = __NAME__
 
@@ -88,7 +102,81 @@ class IO:
     def __lshift__(self, prompt):
         return input(prompt)
 
+    def __and__(self, v):
+        return ptr(v)
+
+    def __gt__(self, v):
+        return v
+
 IO = IO()
+
+class STDOUT:
+    def __rshift__(self, value):
+        print(value, file=stdout)
+
+class STDIN:
+    def __lshift__(self, prompt):
+        return input(prompt)
+
+STDOUT = STDOUT()
+STDIN = STDIN()
+
+class Stack:
+
+    stack = []
+
+    def push(value):
+        Stack.stack.append(value)
+
+    def pop():
+        return Stack.stack.pop()
+
+    def top():
+        return Stack.stack[-1]
+
+    def print():
+        print(Stack.stack.pop())
+
+    def get():
+        print(Stack.top())
+
+    def all():
+        print(Stack.stack)
+    
+    def add():
+        Stack.stack.append(Stack.stack.pop() + Stack.stack.pop())
+
+    def sub():
+        Stack.stack.append(Stack.stack.pop() - Stack.stack.pop())
+
+    def mult():
+        Stack.stack.append(Stack.stack.pop() * Stack.stack.pop())
+
+    def div():
+        Stack.stack.append(Stack.stack.pop() / Stack.stack.pop())
+
+    def pow():
+        Stack.stack.append(Stack.stack.pop() ** Stack.stack.pop())
+
+    def putchar(unicode_code):
+        Stack.stack.append(chr(unicode_code))
+
+Stack.push("Hello, World")
+Stack.putchar(72)
+Stack.putchar(101)
+Stack.putchar(108)
+Stack.putchar(108)
+Stack.putchar(111)
+Stack.putchar(32)
+Stack.putchar(119)
+Stack.putchar(111)
+Stack.putchar(114)
+Stack.putchar(108)
+Stack.putchar(100)
+Stack.all()
+Stack.print()
+Stack.get()
+
 
 keywords = [
     'true', 'false', 'nil', 'module', 'alias', 'dec', 'def', 'if', 'elif', 'else', 'until', 'unless', 'class', 'switch', 'case', 'while', 'for',
@@ -98,8 +186,9 @@ keywords = [
     'say', 'eq', 'neq', 'gt', 'ge', 'lt', 'le', 'my', 'our', 'defer', 'END', 'discard', 'mut', 'package', 'auto', 'loop', 'lit', 'local', 'set', 
     'to', 'define', 'nonlocal', 'consume', 'static', 'forever', 'LUA', 'RB', 'ZIG', 'C', 'CPP', 'GLEAM', 'ASM', 'putv', 'var', 'fn', 'isnot', 
     'cast', 'inc', 'decr', 'macro', 'notin', 'also', 'before', 'after', 'perhaps', 'mirror', 'sleep', 'wait', 'mystery', 'nothing', 'undefined', 
-    'unknown', 'Nil', 'HUGE_VAL', 
-]
+    'unknown', 'Nil', 'HUGE_VAL', 'through', 'namespace', 'interface', 'again', 'block', 'does', 'awaitfor', 'ensure', 'fixme', 'has', 'lacks',
+    'sqrt', 'cbrt', 'sin', 'cos', 'tan', 'log', 'ln'
+]   
 keywords.sort()
 
 # class Dir:
@@ -142,7 +231,7 @@ keywords.sort()
 
 def swap(a, b):
     a, b = b, a
-    return nil
+    return a, b
 
 class Symbol:
 
@@ -240,26 +329,23 @@ def typeof(value: typing.Any):
     if value == Nil:
         return "#<Nil>"
     
-    if value == true:
-        return "#<bool>"
-
-    if value == false:
-        return "#<bool>"
+    # if value in [true, True, false, False]:
+    #     return "#<bool>"
     
-    if value == maybe:
-        return "#<maybe>"
+    # if value == maybe:
+    #     return "#<maybe>"
     
-    if value in keywords:
-        return "#<keyword>"
+    # if value in keywords:
+    #     return "#<keyword>"
     
-    if value in __GLOBALS__ or value in __LOCALS__:
-        return "#<built-in function or method or variable>"
+    # if value in __GLOBALS__ or value in __LOCALS__:
+    #     return "#<built-in function or method or variable>"
 
-    if value == None:
-        return "#<None>"
+    # if value == None:
+    #     return "#<None>"
 
-    if value == inf:
-        return "#<infinity>"
+    # if value == inf:
+    #     return "#<infinity>"
     
     if value == undefined:
         return "#<undefined>"
@@ -279,8 +365,8 @@ def typeof(value: typing.Any):
     # typeof(one) == #<Number> !
 
     
-    if value in [stdin, stdout, stderr]:
-        return "#<stdio>"
+    # if value in [stdin, stdout, stderr]:
+    #     return "#<stdio>"
     
     # if value.__class__.__name__ == 'str':
     #     result = 'String'
@@ -402,6 +488,10 @@ BOLD = '\033[1m'
 YELLOW = '\033[33m'
 ORANGE = '\033[40m'
 
+def bytecode(code):
+    code_obj = compile(code, '<string>', 'exec')
+    return dis.dis(code_obj)
+
 iota_counter = 0
 def iota(reset: bool = False):
     global iota_counter
@@ -472,6 +562,7 @@ class TodoError(BaseException): ...
 class PanicError(BaseException): ...
 todo_found = False
 panic_found = False
+fixme_found = False
 
 def Ok(expression):
     try:
@@ -597,6 +688,8 @@ def error(m):
     return Error(m)
 
 pi = math.pi
+e = math.e
+tau = math.tau
 
 def append(object, to_add):
     object += to_add
@@ -848,8 +941,7 @@ class io:
     
     def error(__type, msg):
         raise __type(msg)
-
-
+        
 class Imaginary(complex):
     ...
 
@@ -966,10 +1058,10 @@ class nil_t:
         return self
     
     def __setattr__(self, __name, __value):
-        raise TypeError("cannot modify nil")
+        raise TypeError("cannot modify Nil")
     
     def __getattr__(self, name):
-        print(f"[TRACE] accessed nil attribute: {name}")
+        print(f"[TRACE] accessed Nil attribute: {name}")
         return self
     
     def __len__(self):
@@ -979,13 +1071,13 @@ class nil_t:
         return iter([])
     
     def __getitem__(self, idx):
-        raise IndexError("nil does not support item access")
+        raise IndexError("Nil does not support item access")
     
     def __contains__(self, value):
         return False
     
     def __setitem__(self, idx, value):
-        raise SyntaxError("nil does not support item setting")
+        raise SyntaxError("Nil does not support item setting")
     
 Nil = nil_t()
 NilPtr = ptr(Nil)
@@ -993,6 +1085,13 @@ NonePtr = ptr(None)
 
 def unreachable(msg = ""):
     assert False, msg
+
+class UnimplementedError(BaseException): ...
+
+global unimplemented_found
+def unimplemented():
+    unimplemented_found = True
+    raise UnimplementedError("this code is incomplete; complete it then run it again")
 
 class nothing_t:
 
@@ -1025,11 +1124,14 @@ class lazy:
         return self._value
 
 class freezable:
-    def __init__(self, *args):
+    def __init__(self, arg):
         self._frozen = False
-        for arg in args:
-            setattr(self, arg, Nil)
+        self.arg = arg
+        setattr(self, to_s(arg), Nil)
 
+    def __repr__(self):
+        return to_s(self.arg)
+    
     def freeze(self):
         self._frozen = True
 
@@ -1038,9 +1140,264 @@ class freezable:
             raise AttributeError(f"object is frozen")
         super().__setattr__(name, value)
 
+def DidYouMean2(a, b):
+    return SequenceMatcher(None, a, b).ratio()
+
 lable_names = []
 __code__ = Nil
+ALIASES = {}
+INFO = {}
 
+def var_dump(*values):
+    for val in values:
+        if val in [None, Nil, nil]:
+            print(val)
+            continue
+        
+        if type(val) in [int, float]:
+            print(f"{val.__class__.__name__}({val})")
+            continue
+            
+        print(f"{val.__class__.__name__}({len(val)}) {val}")
+
+    return Nil
+
+# class CONST:
+
+#     global __vars
+#     __vars = {}
+#     def __init__(self, name, value):
+#         self.name = name
+#         self.value = value
+#         if self.name in __vars.keys():
+#             raise SyntaxError(f"already initialized constant {self.name}; Cannot recreate it")
+        
+#         __vars[self.name] = self.value
+
+#     def __repr__(self):
+#         return to_s(self.value)
+    
+#     def __set__(self):
+#         raise SyntaxError(f"already initialized constant {self.name}; Cannot recreate it")
+
+
+# def __def(name, value):
+#     if (name + ptr(name)) not in globals():
+#         globals()[name + ptr(name)] = value
+    
+#     else:
+#         raise SyntaxError(f"already initialized constant {name}; Cannot recreate it")
+    
+# def __const(name):
+#     return globals()[name + ptr(name)]
+
+class visibility:
+    _private_mode = False
+
+    @classmethod
+    def enable_private(cls):
+        cls._private_mode = True
+
+    @classmethod
+    def disable_private(cls):
+        cls._private_mode = False
+
+    @staticmethod
+    def private(func):
+        visibility.enable_private()
+        def wrapper(*args, **kwargs):
+            if visibility._private_mode:
+                raise PermissionError(f"trying to access the private function '{func.__name__}'")
+            return func(*args, **kwargs)
+        return wrapper
+
+def deprecated(message):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            # warnings.warn(
+            #     f"Function {func.__name__} is deprecated: {message}",
+            #     category=DeprecationWarning,
+            #     stacklevel=2
+            # )
+            print(Warning(f"Function {func.__name__} is deprecated: {message}"))
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+class itert:
+
+    def __init__(self, n=0):
+        self.n = n
+
+    def times(self, func):
+        for idx in range(self.n):
+            func(idx)
+
+    def each(self, func):
+        for idx in range(len(self.n)):
+            func(self.n[idx])
+
+
+class expect:
+
+    def __init__(self, value):
+        self.value = value
+
+    def toBeEqualTo(self, to):
+        return self.value == to
+    
+    def toBeGreaterThan(self, than):
+        return self.value > than
+    
+    def toBeLessThan(self, than):
+        return self.value < than
+
+    def toBeGreterEqualTo(self, to):
+        return self.value >= to
+    
+    def toBeLessEqualTo(self, to):
+        return self.value <= to
+
+    def toBeNotEqualTo(self, to):
+        return self.value != to
+
+    def toBeIn(self, what):
+        return self.value in what
+
+    def toBeNotIn(self, what):
+        return self.value not in what
+
+ch = queue.Queue()
+class chan:
+
+    def send(value):
+        ch.put(value)
+
+    def get():
+        return ch.get()
+
+    def is_empty():
+        return ch.empty()
+    
+    def is_full():
+        return ch.full()
+
+    def close():
+        ch.shutdown()
+
+    def size():
+        return ch.qsize()
+
+class RangeError(BaseException): ...
+
+class short_int(int):
+    def __init__(self, value):
+        if not value in range(-32768, 32767+1):
+            raise RangeError(f"{value} is not accessible in [-32768, 32767] ")
+        super().__init__()
+
+class ushort_int(int): 
+    def __init__(self, value):
+        if not value in range(0, 65535+1):
+            raise RangeError(f"{value} is not accessible in [0, 65535] ")
+        super().__init__()
+        
+class unsigned_int(int): 
+    def __init__(self, value):
+        if not value in range(0, 4294967295+1):
+            raise RangeError(f"{value} is not accessible in [0, 4294967295] ")
+        super().__init__()
+        
+class long_int(int): 
+    def __init__(self, value):
+        if not value in range(-2147483648, 2147483647+1):
+            raise RangeError(f"{value} is not accessible in [-2147483648, 2147483647] ")
+        super().__init__()
+        
+class ulong_int(int): 
+    def __init__(self, value):
+        if not value in range(0, 4294967295+1):
+            raise RangeError(f"{value} is not accessible in [0, 4294967295] ")
+        super().__init__()
+        
+class long_long_int(int): 
+    def __init__(self, value):
+        if not value in range(-(2**63), (2**63)+1):
+            raise RangeError(f"{value} is not accessible in [-(2**63), (2**63)] ")
+        super().__init__()
+        
+class ulong_long_int(int): 
+    def __init__(self, value):
+        if not value in range(0, 18446744073709551615+1):
+            raise RangeError(f"{value} is not accessible in [0, 18446744073709551615] ")
+        super().__init__()
+
+class undoable:
+
+    def __init__(self, init_state):
+        self._history = [init_state.copy()]
+        self._pointer = 0
+
+    def set(self, key, value):
+        current = self._history[self._pointer].copy()
+        current[key] = value
+        self._history = self._history[:self._pointer + 1]
+        self._history.append(current)
+        self._pointer += 1
+
+    def get(self, key):
+        return self._history[self._pointer][key]
+    
+    def undo(self):
+        if self._pointer > 0:
+            self._pointer -= 1
+
+    def redo(self):
+        if self._pointer < len(self._history) - 1:
+            self._pointer += 1
+
+    def __getitem__(self, key):
+        return self.get(key)
+    
+    def __setitem__(self, key, value):
+        self.set(key, value)
+
+    def __repr__(self):
+        return f"{self._history[self._pointer]}"
+
+def call(fn, *args):
+    return fn(*args)
+
+def each(arr, fn):
+    for elem in arr:
+        yield fn(elem)
+
+def take(arr, n):
+    res = []
+    for idx in range(len(arr)):
+        if idx == n:
+            break
+        res.append(arr[idx])
+    return res
+
+def assert_equal(a, b):
+    assert a == b, f"{a} and {b} are not equal"
+
+def assert_type(a, b):
+    assert typeof(a) == typeof(b), f"{a} and {b} are not with same type"
+
+def retry(fn, *args, count=3):
+    done = 0
+    while done < count:
+        io.sprint(fn(*args))
+        done += 1
+    return Nil
+
+def __random__():
+    return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(5))
+
+class FixMeError(BaseException): ...
 
 with open(argv[1], "r") as file:
     lines = file.readlines()
@@ -1054,11 +1411,17 @@ with open(argv[1], "r") as file:
         __line__ = msg
 
         try:
-            if "#" in msg:
+            if "#" in msg or msg.strip() == "":
                 continue
 
             elif ":=" in msg:
                 exec(f"{msg[:msg.index(":=")].strip()} = {msg[msg.index(":=")+2:].strip()}")
+            
+            elif msg.strip().endswith("!"):
+                exec(f"{msg[:msg.strip().index("!")]}")
+
+            elif len(msg.strip().split(" ")) == 2 and msg.strip().startswith("'"):
+                exec(f"{msg.split()[0][msg.index("'")+1:].strip()}({msg.split()[1].strip()})")
             
             elif msg.startswith("&"):
                 BLOCK = ""
@@ -1075,15 +1438,6 @@ with open(argv[1], "r") as file:
                     for n in items[k]:
                         BLOCK += n
                 with open("__main__.cpp", "w") as f:
-                    f.write(BLOCK[:BLOCK.index(") end")])
-
-            elif "C" in msg and "(" in msg:
-                BLOCK = ""
-                items = [lines[x] for x in range(i+1, len(lines))]
-                for k in range(len(items)):
-                    for n in items[k]:
-                        BLOCK += n
-                with open("__main__.c", "w") as f:
                     f.write(BLOCK[:BLOCK.index(") end")])
 
             elif "RB" in msg and "(" in msg:
@@ -1142,7 +1496,16 @@ with open(argv[1], "r") as file:
                 with open("__main__.zig", "w") as f:
                     f.write(BLOCK[:BLOCK.index(") end")])
                 system("zig run __main__.zig")
-                    
+            
+            elif "require" in msg or "include" in msg:
+                try:
+                    exec(f"import {msg.split()[1].strip()}")
+                except ModuleNotFoundError as e:
+                    if "require" in msg:
+                        raise e
+
+                    elif "include" in msg:
+                        raise Warning(e)
                 
 #             elif "BEGIN" in msg and "{" in msg:
 #                 BLOCK = ""
@@ -1183,6 +1546,19 @@ with open(argv[1], "r") as file:
                     elif "fn" in value:
                         exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = lambda {msg[msg.index("(")+1:msg.index(")")].strip()}: {msg[msg.index("->")+2:].strip()}")
 
+                    elif "through" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")+1].strip()}Range({msg[msg.index("=")+1:msg.index("through")]}, {msg[msg.index("through")+7:].strip()}).new()")
+
+                    elif "<=>" in msg:
+                        first_one = msg[msg.index("=")+1:msg.index("<=>")].strip()
+                        second_one = msg[msg.index("<=>")+3:].strip()
+                        if eval(first_one) > eval(second_one):
+                            exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()}1")
+                        elif eval(second_one) > eval(first_one):
+                            exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()}-1")
+                        elif eval(first_one) == eval(second_one):
+                            exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()}0")
+                            
                     elif "=>" in msg:
                         exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("=>")].strip()}({msg[msg.index("=>")+2:].strip()})")
 
@@ -1195,8 +1571,11 @@ with open(argv[1], "r") as file:
                     elif "sub" in msg:
                         exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("sub")]}-{msg[msg.index("sub")+3:]}")
 
-                    elif "div" in msg:
-                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("div")]}/{msg[msg.index("div")+3:]}")
+                    elif "div" in msg and not "/" in msg:
+                        try:
+                            exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("div")]}/{msg[msg.index("div")+3:]}")
+                        except ZeroDivisionError as e:
+                            exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {undefined}")
 
                     elif "mult" in msg:
                         exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("mult")]}*{msg[msg.index("mult")+4:]}")
@@ -1243,6 +1622,30 @@ with open(argv[1], "r") as file:
                     elif "notin" in msg:
                         exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:msg.index("notin")].strip()} not in {msg[msg.index("notin")+5:].strip()}")
 
+                    elif "sqrt" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = math.sqrt({msg[msg.index("sqrt")+4:].strip()})")
+                    
+                    elif "cbrt" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = math.cbrt({msg[msg.index("cbrt")+4:].strip()})")
+
+                    elif "log" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = math.log10({msg[msg.index("log")+3:].strip()})")
+                    
+                    elif "ln" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = math.log({msg[msg.index("ln")+2:].strip()})")
+
+                    elif "sin" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = math.sin({msg[msg.index("sin")+3:].strip()})")
+
+                    elif "cos" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = math.cos({msg[msg.index("cos")+3:].strip()})")
+
+                    elif "tan" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = math.tan({msg[msg.index("tan")+3:].strip()})")
+
+                    # elif "cot" in msg:
+                    #     exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = math.cot({msg[msg.index("cot")+3:].strip()})")
+
                     elif "|>" in msg:
                         items = msg[msg.index("=")+1:].split("|>")
                         for index in range(len(items)):
@@ -1268,8 +1671,54 @@ with open(argv[1], "r") as file:
                         second_one = msg[msg.index("===")+3:].strip()
                         exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()}seq({first_one}, {second_one})")
 
+                    elif "?" in msg and ":" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()}{msg[msg.index("?")+1:msg.index(":")]} if {msg[msg.index("=")+1:msg.index("?")]} else {msg[msg.index(":")+1:]}")
+
+                    elif "??" in msg:
+                        try:
+                            exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()}{msg[msg.index("=")+1:msg.index("??")]}")
+                        except:
+                            exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()}{msg[msg.index("??")+2:].strip()}")
+
+                    elif "do" in msg:
+                        BLOCK = ""
+                        items = [lines[x] for x in range(i+1, len(lines))]
+                        for k in range(len(items)):
+                            for n in items[k]:
+                                BLOCK += n
+                        exec(f"""
+
+def __{msg[msg.index("var")+3:msg.index("=")].strip()}(): 
+{BLOCK[:BLOCK.index("end")]}
+
+{msg[msg.index("var")+3:msg.index("=")].strip()} = __{msg[msg.index("var")+3:msg.index("=")].strip()}()
+
+""")   
+                    
+                    elif "await" in msg:
+                        body = msg[msg.index("=")+1:].split()
+                        exec(
+                            f"""
+async def __{msg[msg.index("var")+3:msg.index("=")].strip()}():
+    await asyncio.sleep({body[1]})
+    {body[2]}
+
+{msg[msg.index("var")+3:msg.index("=")].strip()} = asyncio.run(__{msg[msg.index("var")+3:msg.index("=")].strip()}())
+"""
+
+                        )
+
+                    elif "has" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()}{msg[msg.index("has")+3:].strip()} in {msg[msg.index("=")+1:msg.index("has")].strip()}")
+                    
+                    elif "lacks" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()}{msg[msg.index("lacks")+5:].strip()} not in {msg[msg.index("=")+1:msg.index("lacks")].strip()}")
+
                     else:
-                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:].strip()}")
+                        try:
+                            exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:].strip()}")
+                        except ZeroDivisionError as e:
+                            exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {undefined}")
 
             elif ">>" in msg or "<<" in msg:
                 exec(msg)
@@ -1294,9 +1743,6 @@ with open(argv[1], "r") as file:
                 else:
                     exec(f"print({msg[:msg.index("~>")].strip()}({msg[msg.index("~>")+2:].strip()}))")
 
-            elif msg.strip().endswith("!"):
-                exec(f"{msg[:msg.strip().index("!")]}")
-
             elif "<" in msg and ">" in msg: 
                 exec(msg[msg.index("<")+1:msg.index(">")])
             
@@ -1305,6 +1751,27 @@ with open(argv[1], "r") as file:
             
             elif msg.strip().endswith("?"):
                 print(f"{eval(msg[:msg.index('?')])}\n=> {CYAN}{BOLD}Ok, {Nil}{BASE}")
+
+            elif "puts" in msg:
+                if type(eval(msg[msg.index("puts")+4:].strip())) in [list, dict, set, tuple, frozenset]:
+                    __pp__(eval(msg[msg.index("puts")+4:].strip()))
+                else:
+                    print(eval(msg[msg.index("puts")+4:].strip())) 
+
+            elif "awaitfor" in msg:
+                rand_name_for_async_func = f"__{__random__()}__"
+                exec(
+                    f"""
+async def {rand_name_for_async_func}():
+    await asyncio.sleep({msg[:msg.index("awaitfor")].strip()})
+    {msg[msg.index("awaitfor")+8:].strip()}
+asyncio.run({rand_name_for_async_func}())
+
+"""
+                )
+
+            elif "ensure" in msg:
+                exec(f"assert {msg[msg.index("ensure")+6:]}")
 
             elif "also" in msg:
                 first_one = msg[:msg.index("also")]
@@ -1360,10 +1827,36 @@ def {msg[msg.index("lable")+5:msg.index(":")].strip()}():
                 else:
                     raise NameError(f"{name} is not defined")
 
+            elif "proc" in msg:
+                exec(
+                    f"""
+def {msg[msg.index("proc")+4:msg.index("=")]}:
+    return {msg[msg.index("=")+1:]}
 
-            # elif "again" in msg:
-            #     previous_line = lines[i-1]
-            #     mexec(previous_line)
+"""
+                )
+
+            elif "block" in msg:
+                BLOCK = ""
+                items = [lines[x] for x in range(i+1, len(lines))]
+                for k in range(len(items)):
+                    for n in items[k]:
+                        BLOCK += n
+
+                exec(
+                    f"""
+def {msg[msg.index("block")+5:msg.index(":")]}():
+    {BLOCK[:BLOCK.index("end")]}
+"""
+                )
+
+            elif "does" in msg:
+                exec(f"{msg[msg.index("does")+4:].strip()}()")
+
+            elif "again" in msg:
+                previous_line = lines[i-1]
+                __clear_exec__()
+                mexec(previous_line)
 
 #             elif msg.strip().startswith("@") and not "=" in msg:
 #                 BLOCK = ""
@@ -1421,18 +1914,30 @@ def {msg[msg.index("macro")+5:msg.index(")")+1]}: return {msg[msg.index(")")+1:]
                     exec(f"{items[1]} = {items[2]}")
 
 
-#             elif "@" in msg and "=" in msg:
-#                 exec(
-#                     f"""
-# class {__name__}:
-#     {msg[msg.index("@")+1:msg.index("=")].strip()} = {msg[msg.index("=")+1:].strip()}
-# """                    
-# )
+            elif "@" in msg and "=" in msg:
+                exec(
+                    f"""
+class {__name__}:
+    {msg[msg.index("@")+1:msg.index("=")].strip()} = {msg[msg.index("=")+1:].strip()}
+"""                    
+)
+
+            elif "@" in msg and not "=" in msg:
+                BLOCK = ""
+                items = [lines[x] for x in range(i+1, len(lines))]
+                for k in range(len(items)):
+                    for n in items[k]:
+                        BLOCK += n
+
+                exec(
+                    f"{msg}{BLOCK[:BLOCK.index("end")]}"
+                )
+                
             elif "set" in msg and "to" in msg:
                 exec(f"{msg[msg.index("set")+3:msg.index("to")].strip()} = {msg[msg.index("to")+2:].strip()}")
 
             elif "consume" in msg and "to" in msg:
-                exec(f"{msg[msg.index("to")+2:].strip()} = {msg[msg.index("consume")+7:msg.index("to")].strip()}; {msg[msg.index("consume")+7:msg.index("to")].strip()} = nil")
+                exec(f"{msg[msg.index("to")+2:].strip()} = {msg[msg.index("consume")+7:msg.index("to")].strip()}; {msg[msg.index("consume")+7:msg.index("to")].strip()} = Nil")
 
             elif "lit" in msg and "=" in msg:
                 exec(f"VARIABLES['{msg[msg.index("lit")+3:msg.index("=")].strip()}'] = {eval(msg[msg.index("=")+1:].strip())}")
@@ -1467,13 +1972,7 @@ def {msg[msg.index("macro")+5:msg.index(")")+1]}: return {msg[msg.index(")")+1:]
                     f"""
 {BLOCK[:BLOCK.index("}")].strip()}
 """
-                )
-
-            elif "puts" in msg:
-                if type(eval(msg[msg.index("puts")+4:].strip())) in [list, dict, set, tuple, frozenset]:
-                    __pp__(eval(msg[msg.index("puts")+4:].strip()))
-                else:
-                    print(eval(msg[msg.index("puts")+4:].strip()))  
+                ) 
 
             elif "never" in msg:
                 continue
@@ -1567,7 +2066,7 @@ while 1:
                 exec(
                     f"""
 class {msg[msg.index("struct")+6:msg.index(":")].strip()}:
-    {BLOCK[:BLOCK.index("end")].strip()}
+{BLOCK[:BLOCK.index("end")]}
 """
                 )
 
@@ -1586,6 +2085,35 @@ class {msg[msg.index("struct")+6:msg.index(":")].strip()}:
 
             elif "enum" in msg and "=" in msg and not "{" in msg and not "}" in msg:
                 exec(f"""{msg.split(" ")[1].strip()} = {eval(msg.split(" ")[2].strip())[eval(msg[msg.index("=")+1:].strip())]}""")
+
+            elif "namespace" in msg:
+                BLOCK = ""
+                items = [lines[x] for x in range(i+1, len(lines))]
+                for k in range(len(items)):
+                    for n in items[k]:
+                        BLOCK += n
+                exec(
+                    f"""
+class {msg[msg.index("namespace")+9:msg.index(":")]}:
+{BLOCK[:BLOCK.index("end")]}
+
+"""
+                )
+
+            elif "interface" in msg:
+                BLOCK = ""
+                items = [lines[x] for x in range(i+1, len(lines))]
+                for k in range(len(items)):
+                    for n in items[k]:
+                        BLOCK += n
+
+                exec(
+                    f"""
+class {msg[msg.index("interface")+9:msg.index(":")]}:
+{BLOCK[:BLOCK.index("end")]}
+
+"""
+                )
 
             elif "discard" in msg:
                 __locals__.pop(msg[msg.index("discard")+7:].strip())
@@ -1621,10 +2149,17 @@ while {msg[msg.index("until")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
                 global m
                 m = msg[msg.index("as")+2:].strip()
                 todo_found = True
+                line_todo = i + 1
+
+            elif "fixme" in msg and "as" in msg:
+                m = msg[msg.index("as")+2:].strip()
+                fixme_found = True
+                line_fixme = i + 1
             
             elif "panic" in msg and "as" in msg:
                 m = msg[msg.index("as")+2:].strip()
                 panic_found = True
+                line_panic = i + 1
 
             elif "alias" in msg:
                 exec(f"type {msg[msg.index("alias")+5:msg.index("=")].strip()} = {msg[msg.index("=")+1:].strip()}")
@@ -1635,7 +2170,7 @@ while {msg[msg.index("until")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
                 for k in range(len(items)):
                     for n in items[k]:
                         BLOCK += n
-                print(
+                exec(
                     f"""
 for {msg[msg.index("as")+2:msg.index(":")].strip()} in {msg[msg.index("with")+4:msg.index("as")].strip()}:
     {BLOCK[:BLOCK.index("end")]}
@@ -1736,12 +2271,6 @@ for {msg[msg.index("as")+2:msg.index(":")].strip()} in {msg[msg.index("with")+4:
 {msg[msg.index("$")+1:msg.index("=")]} = {msg[msg.index('=')+1:].strip()}
     """
                 )
-
-            elif "require" in msg:
-                exec(msg)
-
-            elif "include" in msg:
-                exec(msg)
                 
             elif "next" in msg:
                 continue
@@ -1927,135 +2456,148 @@ match {msg[msg.index("match")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
 """
                 )
 
-            elif "import" in msg:
+            elif "import" in msg or "assert" in msg:
                 exec(msg)
 
-            elif "add" in msg:
-                nums = msg.split("add")
-                result = 0
-                for i in range(len(nums)):
-                    nums[i] = nums[i].strip()
-                    result += eval(nums[i].strip())
-                print(result)
+            elif "C" in msg and "(" in msg:
+                BLOCK = ""
+                items = [lines[x] for x in range(i+1, len(lines))]
+                for k in range(len(items)):
+                    for n in items[k]:
+                        BLOCK += n
+                with open("__main__.c", "w") as f:
+                    f.write(BLOCK[:BLOCK.index(") end")])
 
-            elif "sub" in msg:
-                nums = msg.split("sub")
-                result = 0
-                for i in range(len(nums)):
-                    nums[i] = nums[i].strip()
-                    if i == 0:
-                        result += eval(nums[i].strip())
-                    if i != 0:
-                        result += -(eval(nums[i].strip()))
-                print(result)
+            # elif "add" in msg:
+            #     nums = msg.split("add")
+            #     result = 0
+            #     for i in range(len(nums)):
+            #         nums[i] = nums[i].strip()
+            #         result += eval(nums[i].strip())
+            #     print(result)
 
-            elif "mult" in msg:
-                nums = msg.split("mult")
-                result = 1
-                for i in range(len(nums)):
-                    nums[i] = nums[i].strip()
-                    result *= eval(nums[i].strip())
-                print(result)
+            # elif "sub" in msg:
+            #     nums = msg.split("sub")
+            #     result = 0
+            #     for i in range(len(nums)):
+            #         nums[i] = nums[i].strip()
+            #         if i == 0:
+            #             result += eval(nums[i].strip())
+            #         if i != 0:
+            #             result += -(eval(nums[i].strip()))
+            #     print(result)
 
-            elif "div" in msg:
-                nums = msg.split("div")
-                result = 0
-                for i in range(len(nums)):
-                    nums[i] = nums[i].strip()
-                    if i == 0:
-                        result += eval(nums[i].strip())
-                    if i != 0:
-                        result /= eval(nums[i].strip())
-                print(result)
+            # elif "mult" in msg:
+            #     nums = msg.split("mult")
+            #     result = 1
+            #     for i in range(len(nums)):
+            #         nums[i] = nums[i].strip()
+            #         result *= eval(nums[i].strip())
+            #     print(result)
 
-            elif "pow" in msg:
-                nums = msg.split("pow")
-                result = 0
-                for i in range(len(nums)):
-                    nums[i] = nums[i].strip()
-                    if i == 0:
-                        result += eval(nums[i].strip())
-                    if i != 0:
-                        result **= eval(nums[i].strip())
-                print(result)
+            # elif "div" in msg:
+            #     nums = msg.split("div")
+            #     result = 0
+            #     for i in range(len(nums)):
+            #         nums[i] = nums[i].strip()
+            #         if i == 0:
+            #             result += eval(nums[i].strip())
+            #         if i != 0:
+            #             result /= eval(nums[i].strip())
+            #     print(result)
 
-            elif "mod" in msg:
-                nums = msg.split("mod")
-                result = 0
-                for i in range(len(nums)):
-                    nums[i] = nums[i].strip()
-                    if i == 0:
-                        result += eval(nums[i].strip())
-                    if i != 0:
-                        result %= eval(nums[i].strip())
-                print(result)
+            # elif "pow" in msg:
+            #     nums = msg.split("pow")
+            #     result = 0
+            #     for i in range(len(nums)):
+            #         nums[i] = nums[i].strip()
+            #         if i == 0:
+            #             result += eval(nums[i].strip())
+            #         if i != 0:
+            #             result **= eval(nums[i].strip())
+            #     print(result)
 
-            elif "xor" in msg:
-                nums = msg.split("xor")
-                result = 0
-                for i in range(len(nums)):
-                    nums[i] = nums[i].strip()
-                    if i == 0:
-                        result += eval(nums[i].strip())
-                    if i != 0:
-                        result ^= eval(nums[i].strip())
-                print(result)
+            # elif "mod" in msg:
+            #     nums = msg.split("mod")
+            #     result = 0
+            #     for i in range(len(nums)):
+            #         nums[i] = nums[i].strip()
+            #         if i == 0:
+            #             result += eval(nums[i].strip())
+            #         if i != 0:
+            #             result %= eval(nums[i].strip())
+            #     print(result)
 
-            elif "shr" in msg:
-                nums = msg.split("shr")
-                result = 0
-                for i in range(len(nums)):
-                    nums[i] = nums[i].strip()
-                    if i == 0:
-                        result += eval(nums[i].strip())
-                    if i != 0:
-                        result >>= eval(nums[i].strip())
-                print(result)
+            # elif "xor" in msg:
+            #     nums = msg.split("xor")
+            #     result = 0
+            #     for i in range(len(nums)):
+            #         nums[i] = nums[i].strip()
+            #         if i == 0:
+            #             result += eval(nums[i].strip())
+            #         if i != 0:
+            #             result ^= eval(nums[i].strip())
+            #     print(result)
 
-            elif "shl" in msg:
-                nums = msg.split("shl")
-                result = 0
-                for i in range(len(nums)):
-                    nums[i] = nums[i].strip()
-                    if i == 0:
-                        result += eval(nums[i].strip())
-                    if i != 0:
-                        result <<= eval(nums[i].strip())
-                print(result)
+            # elif "shr" in msg:
+            #     nums = msg.split("shr")
+            #     result = 0
+            #     for i in range(len(nums)):
+            #         nums[i] = nums[i].strip()
+            #         if i == 0:
+            #             result += eval(nums[i].strip())
+            #         if i != 0:
+            #             result >>= eval(nums[i].strip())
+            #     print(result)
+
+            # elif "shl" in msg:
+            #     nums = msg.split("shl")
+            #     result = 0
+            #     for i in range(len(nums)):
+            #         nums[i] = nums[i].strip()
+            #         if i == 0:
+            #             result += eval(nums[i].strip())
+            #         if i != 0:
+            #             result <<= eval(nums[i].strip())
+            #     print(result)
                 
-            elif "neq" in msg:
-                first = eval(msg[:msg.index("neq")].strip())
-                second = eval(msg[msg.index("neq")+3:].strip())
-                print(first != second)
+            # elif "neq" in msg:
+            #     first = eval(msg[:msg.index("neq")].strip())
+            #     second = eval(msg[msg.index("neq")+3:].strip())
+            #     print(first != second)
             
-            elif "eq" in msg:
-                first = eval(msg[:msg.index("eq")].strip())
-                second = eval(msg[msg.index("eq")+2:].strip())
-                print(first == second)
+            # elif "eq" in msg:
+            #     first = eval(msg[:msg.index("eq")].strip())
+            #     second = eval(msg[msg.index("eq")+2:].strip())
+            #     print(first == second)
 
-            elif "gt" in msg:
-                first = eval(msg[:msg.index("gt")].strip())
-                second = eval(msg[msg.index("gt")+2:].strip())
-                print(first > second)
+            # elif "gt" in msg:
+            #     first = eval(msg[:msg.index("gt")].strip())
+            #     second = eval(msg[msg.index("gt")+2:].strip())
+            #     print(first > second)
 
-            elif "ge" in msg:
-                first = eval(msg[:msg.index("ge")].strip())
-                second = eval(msg[msg.index("ge")+2:].strip())
-                print(first >= second)
+            # elif "ge" in msg:
+            #     first = eval(msg[:msg.index("ge")].strip())
+            #     second = eval(msg[msg.index("ge")+2:].strip())
+            #     print(first >= second)
 
-            elif "lt" in msg:
-                first = eval(msg[:msg.index("lt")].strip())
-                second = eval(msg[msg.index("lt")+2:].strip())
-                print(first < second)
+            # elif "lt" in msg:
+            #     first = eval(msg[:msg.index("lt")].strip())
+            #     second = eval(msg[msg.index("lt")+2:].strip())
+            #     print(first < second)
 
-            elif "le" in msg:
-                first = eval(msg[:msg.index("le")].strip())
-                second = eval(msg[msg.index("le")+2:].strip())
-                print(first <= second)
+            # elif "le" in msg:
+            #     first = eval(msg[:msg.index("le")].strip())
+            #     second = eval(msg[msg.index("le")+2:].strip())
+            #     print(first <= second)
 
             else:
                 with open("undefined.log", "w") as f:
                     f.write(msg)
+
+                # for idx in range(len(keywords)):
+                #     if DidYouMean2(msg, keywords[idx]) >= 0.7:
+                #         raise NameError(f"Did You Mean '{keywords[idx]}'?")
 
             # try:
             #     if __name__ == "__main__":
@@ -2065,11 +2607,17 @@ match {msg[msg.index("match")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
             #         pass
             #     else:
             #         raise NameError(e)
+            INFO[i + 1] = True
 
         except KeyboardInterrupt:
             print(UNDERLINE + 'Interrupt' + BASE)
 
+        except DeprecationWarning as e:
+            print("got it")
+
         except BaseException as e:
+            # raise e.__class__(e)
+
             if msg.endswith("?"):
                 print(f"{RED}error in line {i+1} \n=> Error, {e}{BASE}")
                 continue
@@ -2104,6 +2652,15 @@ match {msg[msg.index("match")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
                 print(YELLOW + str(Warning("Warning: " + str(e) + BASE)))
                 continue
 
+            if e.__class__ == PanicError:
+                print(e)
+                break
+
+            if e.__class__ == TodoError:
+                print(e)
+                break
+
+
             if "object of type 'mystery_t' has no len()" in str(e):
                 new_type2 = f"""
 {e.__class__.__name__}: {e}; {CYAN}mystery is mystery :){BASE}
@@ -2124,16 +2681,22 @@ match {msg[msg.index("match")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
                 # __code__ = 0xdeadc0de
                 __code__ = hex(3735929054)
 
+            # print(type3)
+            # print(new_type)
             print(new_type2)
+            INFO[i + 1] = False
 
 if show:
     print(f"processing time: {time.time() - start}s")
 
 if todo_found:
-    raise TodoError(f"todo found; This code will crash if it is ran. Be sure to finish it before running your program")
+    raise TodoError(f"todo found; be sure to finish it before running your program; at line {line_todo}")
 
 if panic_found:
-    raise PanicError(f"panic found;")
+    raise PanicError(f"panic found; at line {line_panic}")
+
+if fixme_found:
+    raise FixMeError(f"this code needs fixing; at line {line_fixme}")
 
 try:
     exec(this_line[this_line.index("defer")+5:].strip())

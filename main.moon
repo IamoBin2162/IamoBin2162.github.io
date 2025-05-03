@@ -198,7 +198,7 @@
 # # it starts from 0
 # println->numbers
 # # if you use -> for calling println or etc. that prints sth to stdout,
-# # you will be gotten 'None' at the end
+# # you will get 'None' at the end
 
 # # but:
 # sprint->numbers
@@ -668,7 +668,6 @@
 
 # `moon main.moon`
 
-
 # def prime():
 #   io.printf("Starting...")
 #   result = 0
@@ -711,7 +710,6 @@
 
 # printf("Hello")!
 # # calls the function
-
 
 # local name = "Mobin"
 # puts name
@@ -862,7 +860,7 @@
 # puts __my_macro(8, 6)
 
 # define magic_number 2162
-# puts 
+# puts
 
 # macro __my(a, b) a if a < b else b
 # puts __my(4, 8)
@@ -923,7 +921,7 @@
 
 #     int main() {
 #         printf("Hello, World");
-        
+
 #         return 0;
 #     }
 
@@ -951,9 +949,9 @@
 
 #     pub fn main() {
 
-        # io.print("Hello, World")
+# 	io.print("Hello, World")
 
-        # Nil
+# 	Nil
 
 #     }
 
@@ -1052,8 +1050,8 @@
 # var a = await 2 printf("Hello")
 # var r = 0 through 10
 # var ar = 'a' through 'e'
-
-# puts nothing
+# var contains = [0, 1] has 2
+# var contains2 = [0, 1] lacks 2
 
 # with [2, 6, 1, 2] as num:
 #     printf(to_s(num))
@@ -1061,7 +1059,7 @@
 
 # with open("fmt.py", "r") as f:
 #     printf("%s", f)
-# 	  - WTF ?! 
+# 	  - WTF ?!
 #     + IDK :)
 # end
 
@@ -1167,7 +1165,7 @@
 # class pub_and_priv:
 # 	def pub(self):
 # 		return "pub"
-	
+
 # 	@visibility.private
 # 	def priv(self):
 # 		return "priv"
@@ -1205,8 +1203,6 @@
 # @name = "Mobin"
 # puts __main__.name
 
-# struct enum namespace interface
-
 # namespace block:
 # 	def greet():
 # 		print("Hello")
@@ -1217,11 +1213,127 @@
 # interface animal:
 # 	sound: None
 # end
-
 # class cat(animal):
 # 	def sound():
 # 		return "meow"
 # end
-
 # my_pet = cat!
 # puts my_pet.sound()
+
+# si := short_int(32767)
+# usi := ushort_int(65535)
+# ui := unsigned_int(4294967295)
+# li := long_int(2147483647)
+# uli := ulong_int(4294967295)
+# lli := long_long_int(2**63)
+# ulli := ulong_long_int(18446744073709551615)
+
+# state := undoable({"c": 0})
+# state["c"] = 1!
+# state["c"] = 2!
+# print(state)!
+# state.undo()!
+# print(state)!
+# state.undo()!
+# print(state)!
+# state.redo()!
+# print(state)!
+
+# var r = (lambda: Nil)()
+# puts r
+
+# proc hi(name) = f"Hi {name}"
+# puts hi("mobin")
+
+# puts "hi"
+# again
+
+# block b:
+# 	printf("Hello")
+# end
+# does b
+
+# puts hello
+# if ERR is not None:
+# 	printf(ERR)
+# end
+# if not ok:
+# 	printf(ERR)
+# end
+
+# require t
+# include t
+
+# for elem in each([0, 1, 2], io.sprint):
+#     print(elem)
+# end
+
+# call(print, "Hello", "World")!
+
+# print(take([x for x in Range(0, 2).new()], len))!
+# print(take([0, 1], 2))!
+# print(take([0, 1], 5))!
+
+# assert_equal(0, 1)!
+
+# assert_type(4, 10.0)!
+
+# retry(print, 0, count=3)!
+
+# 2 awaitfor printf("Hello")
+
+# ensure False
+
+# unimplemented()!
+
+# fixme as "This code needs your fix to be ran"
+
+# IO >> (IO & Nil)
+
+# STDOUT >> (STDIN << ">>> ")
+
+# IO >> (IO > 0)
+
+# puts hex(3735929054)
+# 0xdeadc0de
+
+# puts hex(12648430)
+# 0xc0ffee
+
+# puts hex(195936478)
+# 0xbadc0de
+
+# puts hex(2976579765)
+# 0xb16b00b5
+
+# puts hex(4276215469)
+# 0xfee1dead
+
+# puts hex(3131961357)
+# 0xbaadf00d
+
+# puts hex(2953575118)
+# 0xb00bface
+
+# puts hex(267262893)
+# 0xfee1bad
+
+# puts hex(49374)
+# 0xc0de
+
+# puts hex(53261)
+# 0xd00d
+
+# puts hex(57007)
+# 0xdeaf
+
+# puts hex(3221344269)
+# 0xc001d00d
+
+# puts hex(2645)
+# 0xa55
+
+# puts hex(3053)
+# 0xbed
+
+# puts chr(72) + chr(101) + chr(108) + chr(108) + chr(111) + chr(32) + chr(119) + chr(111) + chr(114) + chr(108) + chr(100)

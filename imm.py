@@ -1090,7 +1090,7 @@ def div(a, b):
         return a / b
     except ZeroDivisionError:
         return undefined
-    
+
 class nil_t:
 
     _instance = None
@@ -1478,7 +1478,6 @@ def Number(value):
 def Bool(value):
     return bool(value)
 
-TEST
 π = math.pi
 e = math.e
 𝜏 = math.tau
@@ -2263,20 +2262,23 @@ while {msg[msg.index("until")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
                 exec(f"{msg[msg.index("our")+3:].strip()}")
 
             elif "todo" in msg and "as" in msg:
-                global m
-                m = msg[msg.index("as")+2:].strip()
-                todo_found = True
-                line_todo = i + 1
+                # global m
+                # m = msg[msg.index("as")+2:].strip()
+                # todo_found = True
+                # line_todo = i + 1
+                raise TodoError(f"todo found; {msg[msg.index("as")+2:]}")
 
             elif "fixme" in msg and "as" in msg:
-                m = msg[msg.index("as")+2:].strip()
-                fixme_found = True
-                line_fixme = i + 1
+                # m = msg[msg.index("as")+2:].strip()
+                # fixme_found = True
+                # line_fixme = i + 1
+                raise FixMeError(f"fixme found; this code needs fixing; {msg[msg.index("as")+2:]}")
             
             elif "panic" in msg and "as" in msg:
-                m = msg[msg.index("as")+2:].strip()
-                panic_found = True
-                line_panic = i + 1
+                # m = msg[msg.index("as")+2:].strip()
+                # panic_found = True
+                # line_panic = i + 1
+                raise PanicError(f"panic; {msg[msg.index("as")+2:]}")
 
             elif "alias" in msg:
                 exec(f"type {msg[msg.index("alias")+5:msg.index("=")].strip()} = {msg[msg.index("=")+1:].strip()}")
@@ -2729,8 +2731,46 @@ match {msg[msg.index("match")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
         except KeyboardInterrupt:
             print(UNDERLINE + 'Interrupt' + BASE)
 
-        except DeprecationWarning as e:
-            print("got it")
+        except TodoError as e:
+            print(f"""
+{e.__class__.__name__}: {e}
+
+    ┌─ {__FILE__}: {i+1}
+    │
+    │  {msg.strip()}
+    │  {'^' * len(msg.strip())}  here
+    
+
+            """)
+            break
+
+        except PanicError as e:
+            print(f"""
+{e.__class__.__name__}: {e}
+
+    ┌─ {__FILE__}: {i+1}
+    │
+    │  {msg.strip()}
+    │  {'^' * len(msg.strip())}  here
+    
+
+            """)
+            break
+
+#         except FixMeError as e:
+#             print(f"""
+# {e.__class__.__name__}: {e}
+
+#     ┌─ {__FILE__}: {i+1}
+#     │
+#     │  {msg.strip()}
+#     │  {'^' * len(msg.strip())}  here
+    
+
+#             """)
+
+        # except DeprecationWarning as e:
+            # print("got it")
 
         except BaseException as e:
             # raise e.__class__(e)
@@ -2769,14 +2809,6 @@ match {msg[msg.index("match")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
                 print(YELLOW + str(Warning("Warning: " + str(e) + BASE)))
                 continue
 
-            if e.__class__ == PanicError:
-                print(e)
-                break
-
-            if e.__class__ == TodoError:
-                print(e)
-                break
-
 
             if "object of type 'mystery_t' has no len()" in str(e):
                 new_type2 = f"""
@@ -2802,18 +2834,19 @@ match {msg[msg.index("match")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
             # print(new_type)
             print(new_type2)
             INFO[i + 1] = False
+            break
 
 if show:
     print(f"processing time: {time.time() - start}s")
 
-if todo_found:
-    raise TodoError(f"todo found; be sure to finish it before running your program; at line {line_todo}")
+# if todo_found:
+#     raise TodoError(f"todo found; be sure to finish it before running your program; at line {line_todo}")
 
-if panic_found:
-    raise PanicError(f"panic found; at line {line_panic}")
+# if panic_found:
+#     raise PanicError(f"panic found; at line {line_panic}")
 
-if fixme_found:
-    raise FixMeError(f"this code needs fixing; at line {line_fixme}")
+# if fixme_found:
+#     raise FixMeError(f"this code needs fixing; at line {line_fixme}")
 
 try:
     exec(this_line[this_line.index("defer")+5:].strip())

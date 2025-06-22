@@ -1060,7 +1060,7 @@ when you start a line with &, you tell moon that you will have a block (a bunch 
         return f"{name} is {age} years old that lives in {city}"
     end
 
-    # suppose you are a fan of type annotation (sorry but f*ck type annotations), or you wanna write functions as Python recommends you can to do
+    # suppose you are a fan of type annotation (sorry but f*ck type annotations), or you wanna write functions as Python recommends, you can do
 
     puts person("mobin", 17, "Urmia")
 
@@ -1287,6 +1287,9 @@ for comparison
     var divByZero = 1 / 0
     puts divByZero
     # undefined
+
+------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------
 
 # inc, decr
 inc is ++\

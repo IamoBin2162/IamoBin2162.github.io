@@ -4,48 +4,69 @@
 
     $name = "mobin"
     # this makes 'name' variable
+
     grade = 'A'!
     # normal one
+
     <time = 5>
     # with <>
+
     number := 5
     # another way to create a variable, it's by :=
+
     my number = 0
     # creating local variable by 'my'
+
     local name = "Mobin"
     # creating local variable by 'local'
+
+    native number = 5
+    # creating local variable by 'native'
+
     our grade = 'A'
     # normal variable
+
     lit $n = 0
     # creating variables with lit
+
     set n to 8
     # creating variables with set and to
+
     @name = "Mobin"
     # class variable that is created in __main__ class
+
     static num = 0
     # global variable
+
     global n
     n = 5
     # another global
+
     auto thing = [0, 1]
     # auto type choose
     # no diffrence, cause Python usually doesn't care about types
 
-# lit
-this is a keyword to make a varaible, but this will be saved into VARIABLES dict!
-maybe we can call it another version of local variables
-but you access these variables only with io.vprint or io.vprintln or io.vprintf
+    never shit = nothing
+    # a variable which, it will NOT be used, so: 'puts shit' has Error
 
-    lit $name = "Mobin"
-    io.vprintln('$name')!
+# NOTICE
+When i was writing this file (REDAME), i did NOT write concepts by the degree of importance! I just wrote them wherever i was at the file (README)
 
 # Comments:
 as you see in code, we use '#' for writing comments
     
     # moon is a programming language
 
+# lit
+this is a keyword to make a varaible, but this will be saved into VARIABLES dict!
+maybe we can call it a version of local variables
+but you access these variables only with io.vprint or io.vprintln or io.vprintf
+
+    lit $name = "Mobin"
+    io.vprintln('$name')!
+
 # OOP:
-moon is a object-oriented programming language
+moon is an object-oriented programming language
     
     class Car:
 	    def __init__(self, name, year):
@@ -100,7 +121,7 @@ moon is a object-oriented programming language
 
     'printf "Hello"
     # this is OK
-    # but only for the callings that needs at least one argument not more !
+    # but only for the callings that they need at least one argument, not more !
     # 'printf "Hello", "World"
     # not OK
     # note that for this one, it needs to be started with '
@@ -171,6 +192,10 @@ like one, two, ...
     $list = Range('d', 'f').new()
     foreach elem as list:
         printf(elem)
+    end
+
+    loop:
+        fmt.Println("Hello")
     end
 
 # Pipeline:
@@ -298,11 +323,12 @@ io is one of the built-in classes, it has so GOOOOD functions you can use in you
     rand(max: int) -> int
     # returns random.randint(0, max)
     # = 
-    # returns a random in [0, max]
+    # returns a random number in [0, max]
     # this is a math range, if your math is good you uderstood it
-    # but if no
+    # but if no, 
     # [0, max] means, if we call the random number 'x'
     # so: 0 <= x <= max
+    # if you didn't understand, just f*ck off BRO
 
     sleep(sec: float) -> NoReturn
     # sleeps for sec
@@ -340,12 +366,12 @@ io is one of the built-in classes, it has so GOOOOD functions you can use in you
     # uses pprint to pretty print values
 
     lprint(value) -> Any
-    # uses for printing local variables ( my, local )
+    # uses for printing local variables ( my, local, native )
     # note that value must be string
     # this function does not print an '\n' at the end
 
     lprintln(value) -> Any
-    # uses for printing local variables ( my, local )
+    # uses for printing local variables ( my, local, native )
     # note that value must be string
     # this function does print an '\n' at the end
 
@@ -364,6 +390,54 @@ io is one of the built-in classes, it has so GOOOOD functions you can use in you
 
     vprintln(*values)
     # prints variables that are created by lit keyword, with \n at the end
+
+    warn(msg="")
+    # raises a warning with msg
+    
+    error(__type, msg)
+    # raises the __type error with msg
+
+    putchar(code)
+    # returns chr of code
+
+    putchars(*codes)
+    # returns chr of codes in one string
+
+    countc(string, what_char)
+    # returns the count of what_char in string
+
+    assertEqual(a, b)
+    # asserts if a and b are equal
+
+    assertTrue(a)
+    # asserts if a is true (not just True, but also all true values)
+
+    assertFalse(a)
+    # asserts if a is false (not just False, but also all falsy values)
+
+    scanf()
+    # returns the input
+
+    strlen(s)
+    # returns the length of s
+
+    strcpy(s)
+    # returns a copy of s
+
+    strcat(a, b)
+    # returns joined version of a and b
+
+    atoi(s)
+    # returns int version of s
+
+    atof(s)
+    # returns float version of s
+
+    abort()
+    # exits the program with code 1
+
+    alert(value)
+    # returns a warning with msg
 
 # fmt
 a standard library for Moon
@@ -442,7 +516,7 @@ a standard library for Moon
 
 # discard
 uses for deleting a variable from your file
-but it is used for local variables ( my, local )
+but it is used for local variables ( my, local, native )
 
     my num = 0
     io.lprint(num)!
@@ -478,10 +552,15 @@ creates an infinite loop
     end
 
 # macro
-macros can be define by define or macro keyword
+macros can be defined by define or macro keyword
 
     define __my_macro(a, b) a if a < b else b
     # func-like macro
+    # yeah, kinda hard to read
+    # it like:
+    # def __my_macro(a, b):
+    #   return a if a < b else b
+    
     define magic_number 2162
     # var
 
@@ -494,7 +573,7 @@ macros can be define by define or macro keyword
     puts number
 
 # consume
-moves a value to a new variable, leaving the original variable empty
+moves a value to a new variable, leaving the original variable empty (nil)
 
     a := 0
     b := 1
@@ -505,13 +584,11 @@ moves a value to a new variable, leaving the original variable empty
     # 0
 
 # back-ticks
-
-you can use back-ticks (``) to run the command in your command line. it uses system built-in function
+you can use back-ticks (``) to run commands in your command line. it uses 'system' built-in function
 
     `cd`
 
 # decoraters
-
 as python, moon has decoraters
 you can use them with @
 
@@ -522,14 +599,14 @@ you can use them with @
     end
 
 # Some special variables
+here, we are going to introduce two special variables: _ and ERR
 
-here, we are going to introduce two special variable: _ and ERR
-
-when you get any input from any function in 'io' that gets input, is going to save the result to _
+when you get any input from any function in 'io' that gets input, it is gonna save the result to _
 
     puts _
     # None
     $x = io.read(">>> ")
+    # giving some inputs...
     puts x == _
     # True
 
@@ -544,7 +621,7 @@ but if there is, the type and the message will be saved to ERR, but if there is 
     # #<TypeError: Mooooon>
 
 # match - case
-match is exactly what switch case does
+match-case is exactly what switch-case does
     
     $name = "Mobin"
     match name:
@@ -578,13 +655,18 @@ this makes a local variable
     
     local name = "Mobin"
 
+# native
+this makes a native (local) variable
+
+    native secret_number = 2162
+
 # type
-it is used for creating alias
+it is used for creating aliases
 
     type number = int
 
 # struct
-it is a bunch of variables
+it is a bunch of variables, but, as you know, NOT with values, but with ONLY and ONLY with their TYPES
 
     struct Student:
         name: str
@@ -603,6 +685,8 @@ it is a bunch of values
 
     enum week {"Sunday": iota()+1, "Monday": iota()+1, "Tuesday": iota()+1, "Wednesday": iota()+1, "Thursday": iota()+1, "Friday": iota()+1, "Saturday": iota()+1}
     enum today week = 'Sunday'
+    # creating an instance, maybe we can call it, for our enum, with this syntax:
+    # enum A_NAME ENUM_NAME = STRING_NAME_OF_A_VALUE_OF_OUR_ENUM
     puts today
 
 # say
@@ -691,6 +775,8 @@ this will raise an error
 import the package or moodule you give
 but if there is any error in importing, 
 this will print a warning
+
+NOTE THAT NOW WE HAVE 'include' AND 'require' AS KEYWORDS NOW 
 
     isinstanceof(__object, __class_or_tuple)
 checks if __object you give is instance of __class_or_tuple
@@ -877,7 +963,7 @@ raises RuntimeError with message message
 
 # addr
 syntax: addr VALUE as SAVE \
-addr keyword gets the result of ptr of VALUE, saves it to SAVE
+addr keyword gets the ptr of VALUE, and then saves it to SAVE
 
     addr nil as nil_ptr
     puts nil_ptr
@@ -923,7 +1009,7 @@ when you start a line with &, you tell moon that you will have a block (a bunch 
         return f"{name} is {age} years old that lives in {city}"
     end
 
-    # suppose you are a fan of type annotation (fuck type annotation), or you wanna write functions as Python recommends you can do
+    # suppose you are a fan of type annotation (sorry but f*ck type annotations), or you wanna write functions as Python recommends you can to do
 
     puts person("mobin", 17, "Urmia")
 
@@ -1023,8 +1109,8 @@ it is for printing the value of lit variables
 this is called, soft-calling that is used for calling functions and methods
 but why soft?
 because it first checks that the given param(s) is(are) (a) valid thing(s) or not !
-if it(they) is(are), prints the result of calling it
-if it(they) is not(are not), passes so __softly__
+if it(they) is(are), prints the result of calling it.
+if it(they) is(are) not, passes so __softly__, without any errors
 
     typeof ~> Nil
     # #<Nil>
@@ -1035,15 +1121,16 @@ if it(they) is not(are not), passes so __softly__
 
 # var
 creates a new variable
-but var has so many so things to be implemented in :)
+but var has so many things that you can use them :)
 
 #### soft-calling:
 it is as mentioned, but here it returns the result !
 
 #### =>
-calling functions with params
+calling functions with params (but you can do it without params also)
     
     var call = io.sprint => "Hi"
+    var res = A_FREAKING_FUNC =>
 
 #### <=
 calling functios without params
@@ -1099,24 +1186,33 @@ you can use these ops and etc. with var
     end
     var a = await 2 printf("Hello")
     # await in var-level
-    # but syntax in not as async-function-level
+    # but syntax in not as function-level
     # it gets two things: a number (seconds) to delay, then a work to do
     var r = 0 through 10
     var ar = 'a' through 'e'
+    # note: 'through' uses Range class
     var contains = [0, 1] has 2
     var contains2 = [0, 1] lacks 2
+    var abs = |-5|
+    # absolute value with ||
+    # note: || is only available with var
+    var fact = 5!
+    # factorial
+    # this is not as same as ! in the module-level that runs Python code!
+    var conv = 5_f
+    # to float
+    var conv2 = 1.5_i
+    # to integer
+    var conv3 = 0_b
+    # to boolean
+    var conv4 = 7895_s
+    # to string
 
-say hi to new ops: __isnot__, __notin__, __has__, __lacks__\
+say hi to new ops (that we saw examples of them above!): __isnot__, __notin__, __has__, __lacks__\
 isnot = is not\
 notin = not in\
 has = in\
 lacks = not in
-
-#### cast
-casting types
-
-    num := 1
-    var new_one = cast[bool](num)
 
 #### pipeline (|>)
 you can use them as you could in the module-level
@@ -1190,7 +1286,7 @@ freezable is a class that makes an object then you can freeze it !
     # cause f is frozen
 
 # undo, redo
-undoable is a class that makes an objetc then you can travel at time and get previous value
+undoable is a class that makes an object then you can travel in time and get previous value
 
     state := undoable({"c": 0})
     state["c"] = 1!
@@ -1278,7 +1374,7 @@ it is a syntax sugar (maybe we can call it that)
     # that __RAND_NAME__ is a random name that moon makes
     
 # fixme
-this is used for telling the coder that that line or maybe that block
+this is used for telling the coder that that line or maybe that block needs some repair
 
     fixme as "This code needs your fix to be ran"
 
@@ -1556,6 +1652,7 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     | fixme    | is used to tell the coder that the code needs fix at a line or maybe block!                                   |
     | has      | is like in keyword                                                                                            |
     | lacks    | is like notin                                                                                                 |
+    | native   | is for making local variables                                                                                 |
 
 # Other Things:
 
@@ -1668,7 +1765,7 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
             self.age = age
             self.__id = id
             # self.__id is private-like
-            # but note that there is nothing called private neither in python nor moon !
+            # but note that there is nothing called private in python !
     end
     $mobin = Person("mobin", 16, 122333)
     # io.print(mobin.name, mobin.age, mobin.__id)!
@@ -1696,7 +1793,7 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     $result2 = stdin.readlines()
     # note that, there is a 's' at the end of readlines !
     # infinitly getting input
-    # because when you are reading stdin, with readlines, this is going to read the lines till the end, but the end for stdin is ^C (i think this is only in Windows), so your program will no finish until ^C
+    # because when you are reading stdin, with readlines, this is going to read the lines till the end, but the end for stdin is ^C (i think this is only in Windows), so your program will not finish until ^C
     puts result2
     # error: result2 is not defined !
 
@@ -1735,9 +1832,9 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     _ >> (_ & 7)
     # printing pointer of 7 ! (&7)
     _ >> (_ * (_ & 7))
-    # printing the derefrenced pointer of 7
+    # printing the direfrenced pointer of 7
     # _ >>   ( _ * (        _ & 7 ) )
-    # print    derefrence   getting pointer
+    # print    direfrence   getting pointer
     $p = _ & 'hello'
     # saving pointer of hello in p
     _ >> p
@@ -1745,8 +1842,7 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     _ >> (_ * p)
     # derefrecing p
     _ >> f"{p} -> {_ * p}"
-    # prints p and defrenced version of p
-    # but note that in pointers
+    # prints p and direfrenced version of p
 
     with [2, 6, 1, 2] as num:
         printf(to_s(num))

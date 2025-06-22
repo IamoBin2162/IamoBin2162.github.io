@@ -8,7 +8,14 @@ running a script:
         >>> moon FILE_NAME
 """
 
-import sys, types, os, time, typing, random, platform, math
+import sys
+import types
+import os
+import time
+import typing
+import random
+import platform
+import math
 from ast import literal_eval
 from pprint import pprint as __pp__
 from fractions import Fraction
@@ -161,23 +168,6 @@ class Stack:
     def putchar(unicode_code):
         Stack.stack.append(chr(unicode_code))
 
-Stack.push("Hello, World")
-Stack.putchar(72)
-Stack.putchar(101)
-Stack.putchar(108)
-Stack.putchar(108)
-Stack.putchar(111)
-Stack.putchar(32)
-Stack.putchar(119)
-Stack.putchar(111)
-Stack.putchar(114)
-Stack.putchar(108)
-Stack.putchar(100)
-Stack.all()
-Stack.print()
-Stack.get()
-
-
 keywords = [
     'true', 'false', 'nil', 'module', 'alias', 'dec', 'def', 'if', 'elif', 'else', 'until', 'unless', 'class', 'switch', 'case', 'while', 'for',
     'try', 'except', 'finally', 'async', 'await', 'end', 'yield', 'pass', 'continue', 'break', 'is', 'in', 'raise', 'return', 'and', 'or',
@@ -187,7 +177,7 @@ keywords = [
     'to', 'define', 'nonlocal', 'consume', 'static', 'forever', 'LUA', 'RB', 'ZIG', 'C', 'CPP', 'GLEAM', 'ASM', 'putv', 'var', 'fn', 'isnot', 
     'cast', 'inc', 'decr', 'macro', 'notin', 'also', 'before', 'after', 'perhaps', 'mirror', 'sleep', 'wait', 'mystery', 'nothing', 'undefined', 
     'unknown', 'Nil', 'HUGE_VAL', 'through', 'namespace', 'interface', 'again', 'block', 'does', 'awaitfor', 'ensure', 'fixme', 'has', 'lacks',
-    'sqrt', 'cbrt', 'sin', 'cos', 'tan', 'log', 'ln'
+    'sqrt', 'cbrt', 'sin', 'cos', 'tan', 'log', 'ln', 'native', 'proc', 
 ]   
 keywords.sort()
 
@@ -493,7 +483,7 @@ def bytecode(code):
     return dis.dis(code_obj)
 
 iota_counter = 0
-def iota(reset: bool = False):
+def iota(reset = False):
     global iota_counter
     if reset:
         iota_counter = 0
@@ -507,6 +497,12 @@ def is_zero(__obj: object):
 def __clear_exec__():
     file = open("__exec__.moon", "w")
     file.write("")
+
+def is_falsy(__obj):
+    if __obj == '' or __obj == 0 or  __obj == false or __obj == False:
+        return True
+    else:
+        return False
 
 def to_s(value) -> str:
     return str(value)
@@ -564,11 +560,13 @@ todo_found = False
 panic_found = False
 fixme_found = False
 
+__locals__["\0"] = ''
+
 def Ok(expression):
     try:
         eval(expression)
-    except:
-        return False
+    except BaseException as e:
+        return False, e
     return True
 
 class Range:
@@ -576,7 +574,7 @@ class Range:
     global alpha
     alpha = [
         "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
-        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
+        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
     ]
 
     def __init__(self, start, end):
@@ -619,10 +617,10 @@ def printf(base: str, *values):
         if values == ():
             print(base)
             return nil
+        
         for value in values:
             print(base % value, sep="\n")
         return nil
-
 
 class DidYouMean:
     # This is not my code
@@ -687,27 +685,40 @@ def any(value):
 def error(m):
     return Error(m)
 
+def __moon__(expr):
+    # returns the expr which is with python syntax to moon syntax
+    # don't have energy to complete this one, but i think it's a good idea :(
+    ...
+
+def __py__(expr):
+    # returns the expr which is with moon syntax to py syntax
+    # don't have energy to complete this one, but i think it's a good idea :(
+    ...
+
 pi = math.pi
 e = math.e
 tau = math.tau
 
 def append(object, to_add):
-    object += to_add
+    if type(object) == list:
+        object.append(to_add)
+    else:
+        object += to_add
+    
     return object
 
 def split(string, with_what):
     return string.split(with_what)
 
 def leq(a, b):
-    # loose equl
+    # loose equal
     if type(a) in [int, float] and type(b) in [int, float]:
-        return round(a) == round(b)
-    
+        return round(a) == round(b)    
     else:
         return a == b
 
 def seq(a, b):
-    # strict equla
+    # strict equal
     if type(a) == type(b) and a == b and ptr(a) == ptr(b) and id(a) == id(b):
         return True
     return False
@@ -942,6 +953,63 @@ class io:
     def error(__type, msg):
         raise __type(msg)
         
+    def putchar(code):
+        return chr(code)
+        
+    def putchars(*codes):
+        res = ""
+        for code in codes:
+            res += chr(code)
+        
+        return res
+
+    def countc(string, what_char):
+        count = 0
+        for char in string:
+            if char == what_char:
+                count += 1
+
+        return count
+
+    def assertEqual(a, b):
+        assert a == b, f"{a} and {b} are not equal"
+
+
+    def assertTrue(a):
+        assert a, f"{a} is not true"
+
+    def assertFalse(a):
+        assert not a, f"{a} is not false"
+
+    def scanf(): 
+        global _
+        _ = input()
+        return _
+
+    def strlen(s: str):
+        return len(s)
+
+    def strcpy(s: str):
+        return s
+
+    def strcat(a: str, b: str):
+        return a + b
+
+    def atoi(s: str):
+        return int(s)
+
+    def atof(s: str):
+        return float(s)
+
+    def abort():
+        io.exit(1)
+
+    def alert(value):
+        return Warning(YELLOW + value + BASE)
+
+    def getenv():
+        ...
+
 class Imaginary(complex):
     ...
 
@@ -990,20 +1058,8 @@ def mexec(code):
 def parseStmt(value):
     return mexec(value)
 
-def TEST(func, print_or_return: str, catch_err: bool, *param):
-    try:
-        if print_or_return == "print":
-            io.print(func(param))
-
-        elif print_or_return == "return":
-            return func(param)
-        else:
-            io.throw(NameError, f"for 'print_or_return' only 'print' or 'return' is acceptible not '{print_or_return}'")
-    except BaseException as e:
-        if catch_err:
-            io.print(e)
-        else:
-            raise e.__class__(e)
+def TEST():
+    print(f"HI FROM {LINE}")
 
 def debug(expr):
     try:
@@ -1011,7 +1067,7 @@ def debug(expr):
     except BaseException as e:
         return Error(), Nil, e
     else:
-        return "Ok", Nil
+        return "OK", Nil
 
 # class Nil:
 #     def __repr__(self):
@@ -1044,7 +1100,6 @@ class nil_t:
             cls._instance = super().__new__(cls)
         return cls._instance
     
-
     def __repr__(self) -> str:
         return "Nil"
     
@@ -1220,12 +1275,12 @@ def deprecated(message):
             #     category=DeprecationWarning,
             #     stacklevel=2
             # )
-            print(Warning(f"Function {func.__name__} is deprecated: {message}"))
+            print(Warning(YELLOW + f"Function {RED + func.__name__ + BASE + YELLOW} is deprecated: {CYAN + message}" + BASE))
             return func(*args, **kwargs)
         return wrapper
     return decorator
 
-class itert:
+class iter:
 
     def __init__(self, n=0):
         self.n = n
@@ -1237,7 +1292,6 @@ class itert:
     def each(self, func):
         for idx in range(len(self.n)):
             func(self.n[idx])
-
 
 class expect:
 
@@ -1399,6 +1453,36 @@ def __random__():
 
 class FixMeError(BaseException): ...
 
+# class String(str): ...
+# class Integer(int): ...
+# class Float(float): ...
+# class Complex(complex): ...
+# class Array(list): ...
+# class Dict(dict): ...
+# class Set(set): ...
+# class Tuple(tuple): ...
+
+def String(value):
+    return str(value)
+
+def Number(value):
+    if __etype__(value) == int:
+        return int(value)
+    
+    elif __etype__(value) == float:
+        return float(value)
+    
+    else:
+        return nan
+    
+def Bool(value):
+    return bool(value)
+
+TEST
+π = math.pi
+e = math.e
+𝜏 = math.tau
+
 with open(argv[1], "r") as file:
     lines = file.readlines()
 
@@ -1420,8 +1504,16 @@ with open(argv[1], "r") as file:
             elif msg.strip().endswith("!"):
                 exec(f"{msg[:msg.strip().index("!")]}")
 
-            elif len(msg.strip().split(" ")) == 2 and msg.strip().startswith("'"):
-                exec(f"{msg.split()[0][msg.index("'")+1:].strip()}({msg.split()[1].strip()})")
+            elif msg.strip().endswith("?"):
+                try:
+                    eval(msg[:msg.strip().index('?')].strip())
+                except BaseException as e:
+                    print(f"{RED}{e.__class__.__name__}: {CYAN}{e}{BASE}")
+                else:
+                    pass
+
+#            elif len(msg.strip().split(" ")) == 2 and msg.strip().startswith("'"):
+#                exec(f"{msg.split()[0][msg.index("'")+1:].strip()}({msg.split()[1].strip()})")
             
             elif msg.startswith("&"):
                 BLOCK = ""
@@ -1643,8 +1735,8 @@ with open(argv[1], "r") as file:
                     elif "tan" in msg:
                         exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = math.tan({msg[msg.index("tan")+3:].strip()})")
 
-                    # elif "cot" in msg:
-                    #     exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = math.cot({msg[msg.index("cot")+3:].strip()})")
+                    elif "cot" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = 1/math.tan({msg[msg.index("cot")+3:].strip()})")
 
                     elif "|>" in msg:
                         items = msg[msg.index("=")+1:].split("|>")
@@ -1686,12 +1778,16 @@ with open(argv[1], "r") as file:
                         for k in range(len(items)):
                             for n in items[k]:
                                 BLOCK += n
+
                         exec(f"""
 
 def __{msg[msg.index("var")+3:msg.index("=")].strip()}(): 
 {BLOCK[:BLOCK.index("end")]}
 
 {msg[msg.index("var")+3:msg.index("=")].strip()} = __{msg[msg.index("var")+3:msg.index("=")].strip()}()
+if {msg[msg.index("var")+3:msg.index("=")].strip()} == "main":
+    {msg[msg.index("var")+3:msg.index("=")].strip()}
+
 
 """)   
                     
@@ -1713,6 +1809,24 @@ async def __{msg[msg.index("var")+3:msg.index("=")].strip()}():
                     
                     elif "lacks" in msg:
                         exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()}{msg[msg.index("lacks")+5:].strip()} not in {msg[msg.index("=")+1:msg.index("lacks")].strip()}")
+
+                    elif msg.count("|") == 2:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()} abs({msg.strip()[msg.index("|")+1:-1].strip()})")
+
+                    elif msg.strip().endswith("!"):
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()} math.factorial({msg[msg.index("=")+1:msg.index("!")].strip()})")
+
+                    elif "_f" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()} float({msg[msg.index("=")+1:msg.index("_f")].strip()})")
+
+                    elif "_i" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()} int({msg[msg.index("=")+1:msg.index("_i")].strip()})")
+
+                    elif "_s" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()} str({msg[msg.index("=")+1:msg.index("_s")].strip()})")
+
+                    elif "_b" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()} bool({msg[msg.index("=")+1:msg.index("_b")].strip()})")
 
                     else:
                         try:
@@ -1748,9 +1862,6 @@ async def __{msg[msg.index("var")+3:msg.index("=")].strip()}():
             
             elif msg.count('`') == 2:
                 system(msg.strip()[msg.index("`")+1:-1].strip())
-            
-            elif msg.strip().endswith("?"):
-                print(f"{eval(msg[:msg.index('?')])}\n=> {CYAN}{BOLD}Ok, {Nil}{BASE}")
 
             elif "puts" in msg:
                 if type(eval(msg[msg.index("puts")+4:].strip())) in [list, dict, set, tuple, frozenset]:
@@ -1831,7 +1942,7 @@ def {msg[msg.index("lable")+5:msg.index(":")].strip()}():
                 exec(
                     f"""
 def {msg[msg.index("proc")+4:msg.index("=")]}:
-    return {msg[msg.index("=")+1:]}
+    {msg[msg.index("=")+1:]}
 
 """
                 )
@@ -1922,16 +2033,16 @@ class {__name__}:
 """                    
 )
 
-            elif "@" in msg and not "=" in msg:
-                BLOCK = ""
-                items = [lines[x] for x in range(i+1, len(lines))]
-                for k in range(len(items)):
-                    for n in items[k]:
-                        BLOCK += n
+            # elif "@" in msg and not "=" in msg:
+            #     BLOCK = ""
+            #     items = [lines[x] for x in range(i+1, len(lines))]
+            #     for k in range(len(items)):
+            #         for n in items[k]:
+            #             BLOCK += n
 
-                exec(
-                    f"{msg}{BLOCK[:BLOCK.index("end")]}"
-                )
+            #     exec(
+            #         f"{msg}{BLOCK[:BLOCK.index("end")]}"
+            #     )
                 
             elif "set" in msg and "to" in msg:
                 exec(f"{msg[msg.index("set")+3:msg.index("to")].strip()} = {msg[msg.index("to")+2:].strip()}")
@@ -2138,6 +2249,12 @@ while {msg[msg.index("until")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
 
             elif "my" in msg and "=" in msg:
                 name = msg[msg.index("my")+2:msg.index("=")].strip()
+                value = eval(msg[msg.index("=")+1:].strip())
+                __locals__[name] = value
+                name = __locals__[name]
+
+            elif "native" in msg and "=" in msg:
+                name = msg[msg.index("native")+6:msg.index("=")].strip()
                 value = eval(msg[msg.index("=")+1:].strip())
                 __locals__[name] = value
                 name = __locals__[name]

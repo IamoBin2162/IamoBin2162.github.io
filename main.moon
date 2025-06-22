@@ -1034,6 +1034,7 @@
 # var s = sin pi
 # var c = cos pi
 # var t = tan pi
+# var c = cot pi
 # var sq = sqrt 4
 # var cb = cbrt 8
 # var l = log 10
@@ -1052,6 +1053,12 @@
 # var ar = 'a' through 'e'
 # var contains = [0, 1] has 2
 # var contains2 = [0, 1] lacks 2
+# var abs = |-5|
+# var fact = 5!
+# var conv = 5_f
+# var conv2 = 1.5_i
+# var conv3 = 0_b
+# var conv4 = 7895_s
 
 # with [2, 6, 1, 2] as num:
 #     printf(to_s(num))
@@ -1337,3 +1344,59 @@
 # 0xbed
 
 # puts chr(72) + chr(101) + chr(108) + chr(108) + chr(111) + chr(32) + chr(119) + chr(111) + chr(114) + chr(108) + chr(100)
+
+# Stack.push("Hello, World")!
+# Stack.putchar(72)!
+# Stack.putchar(101)!
+# Stack.putchar(108)!
+# Stack.putchar(108)!
+# Stack.putchar(111)!
+# Stack.putchar(32)!
+# Stack.putchar(119)!
+# Stack.putchar(111)!
+# Stack.putchar(114)!
+# Stack.putchar(108)!
+# Stack.putchar(100)!
+# Stack.all()!
+# Stack.print()!
+# Stack.get()!
+
+# var main = do
+#     printf("Hello")
+# end
+
+# puts Number("Hello")
+
+# native num = 2162
+# io.lprint("num")!
+
+# # unreachable, unimplemented, todo, panic, fixme
+
+# proc main() = printf("Hello, World")
+# main()!
+
+# puts PLATFORM
+
+# puts append(list(), 0)
+
+# puts io.putchar(72)
+
+# puts io.putchars(72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100)
+
+# puts INFO
+# puts 0
+# puts Hello
+# # ERROR
+# puts INFO
+
+# printf("%s", io.countc("Hello", "l"))!
+
+# io.assertEqual(5, 7)!
+# io.assertTrue("")!
+# io.assertFalse("H")!
+
+# &Stack.push(5)
+# Stack.push(5)
+# Stack.add()
+# printf("%d", Stack.top())
+# end

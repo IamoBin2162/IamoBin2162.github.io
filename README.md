@@ -961,6 +961,57 @@ i'm sure you get (by above example) that if there is a char in your string that 
     fail(message)
 raises RuntimeError with message message
 
+    div(a, b)
+a / b
+
+    unreachable(msg="")
+gives an assertion with msg
+
+    unimplemented()
+raises UnimplementedError
+
+    var_dump(*values)
+prints with this syntax: type(len) value
+
+    call(fn, *args)
+calls the function with args
+
+    each(arr, fn)
+for each element in arr, implements fn, then returns the result in an array
+
+    take(arr, n)
+returns first n values of arr
+
+    assert_equal(a, b)
+raises an assertion if a and b are not equal
+
+    assert_type(a, b)
+raises an assertion if a and b are not at the same type
+
+    retry(fn, *args, count=3)
+runs the fn with args count times
+
+    __random__()
+returns a 5 length random string (from both ascii letters and digits)
+
+    String(value)
+returns the str version of value
+
+    Number(value)
+returns the num version of value
+
+    Bool(value)
+returns the bool version of value
+
+    π
+math.pi
+
+    e
+math.e
+
+    𝜏
+math.tau
+
 # addr
 syntax: addr VALUE as SAVE \
 addr keyword gets the ptr of VALUE, and then saves it to SAVE

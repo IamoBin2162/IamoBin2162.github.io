@@ -34,6 +34,7 @@ import threading
 from dataclasses import dataclass
 import string
 from icecream import ic
+import traceback
 
 def bytecode(src):
     return dis.dis(compile(src, '<string>', 'exec'))
@@ -79,7 +80,7 @@ stdin = sys.stdin
 stderr = sys.stderr
 argv = sys.argv
 __FILE__ = argv[1]
-__VERSION__ = 4
+__VERSION__ = 5
 __LOCALS__ = locals()
 __GLOBALS__ = globals()
 __NAME__ = __name__
@@ -99,7 +100,7 @@ global ERR
 ERR = None
 ok = not ERR
 Any = object()
-self = __NAME__
+# self = __NAME__
 
 class IO:
 
@@ -177,7 +178,7 @@ keywords = [
     'to', 'define', 'nonlocal', 'consume', 'static', 'forever', 'LUA', 'RB', 'ZIG', 'C', 'CPP', 'GLEAM', 'ASM', 'putv', 'var', 'fn', 'isnot', 
     'cast', 'inc', 'decr', 'macro', 'notin', 'also', 'before', 'after', 'perhaps', 'mirror', 'sleep', 'wait', 'mystery', 'nothing', 'undefined', 
     'unknown', 'Nil', 'HUGE_VAL', 'through', 'namespace', 'interface', 'again', 'block', 'does', 'awaitfor', 'ensure', 'fixme', 'has', 'lacks',
-    'sqrt', 'cbrt', 'sin', 'cos', 'tan', 'log', 'ln', 'native', 'proc', 
+    'sqrt', 'cbrt', 'sin', 'cos', 'tan', 'log', 'ln', 'native', 'proc', 'let', 'fun', 'object', 'of'
 ]   
 keywords.sort()
 
@@ -1010,6 +1011,9 @@ class io:
     def getenv():
         ...
 
+    def echo(key):
+        print(STACK[key])
+
 class Imaginary(complex):
     ...
 
@@ -1262,7 +1266,7 @@ class visibility:
         visibility.enable_private()
         def wrapper(*args, **kwargs):
             if visibility._private_mode:
-                raise PermissionError(f"trying to access the private function '{func.__name__}'")
+                raise PermissionError(f"trying to access the private '{func.__name__}'")
             return func(*args, **kwargs)
         return wrapper
 
@@ -1481,6 +1485,28 @@ def Bool(value):
 π = math.pi
 e = math.e
 𝜏 = math.tau
+
+def define_singleton_method(name, value):
+    globals()[name] = value
+    return Nil
+    
+def use(mode):
+    ...
+    # strict, loose
+
+STACK = {}
+
+class void_t:
+    def __len__(self):
+        return 0
+    
+    def __repr__(self):
+        return "void"
+    
+    def __bool__(self):
+        return False
+    
+void = void_t()
 
 with open(argv[1], "r") as file:
     lines = file.readlines()
@@ -1826,6 +1852,9 @@ async def __{msg[msg.index("var")+3:msg.index("=")].strip()}():
 
                     elif "_b" in msg:
                         exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()} bool({msg[msg.index("=")+1:msg.index("_b")].strip()})")
+                    
+                    elif ":" in msg:
+                        exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()} {eval(msg[msg.index("=")+1:msg.index(":")].strip()).__class__.__name__}({msg[msg.index("=")+1:msg.index(":")].strip()}).{msg[msg.index(":")+1:]}")
 
                     else:
                         try:
@@ -1868,6 +1897,82 @@ async def __{msg[msg.index("var")+3:msg.index("=")].strip()}():
                 else:
                     print(eval(msg[msg.index("puts")+4:].strip())) 
 
+            elif "let" in msg:
+                STACK[f"{msg[msg.index("let")+3:msg.index("=")].strip()}"] = eval(msg[msg.index("=")+1:])
+
+            elif "fun" in msg:
+                # if "," in msg[msg.index("(")+1:msg.index(")")]:
+                global args
+                args = msg[msg.index("(")+1:msg.index(")")].split(",")
+                args = {arg.strip(): None for arg in args}
+                
+                BLOCK = ""
+                items = [lines[x] for x in range(i+1, len(lines))]
+                for k in range(len(items)):
+                    for n in items[k]:
+                        BLOCK += n
+
+                __todo = BLOCK[:BLOCK.index("end")]
+                args["todo"] = __todo.strip()
+                STACK[f"{msg[msg.index("fun")+3:msg.index("(")].strip()}"] = args
+
+                # else:
+                #     ...
+
+            elif msg.strip().startswith("%"):
+                works = STACK[msg[msg.index("%")+1:msg.index("(")]]
+                # if "," in msg[msg.index("(")+1:msg.index(")")]:
+                values = msg[msg.index("(")+1:msg.index(")")].split(",")
+                todo = works.popitem()
+                if len(works) != len(values):
+                    raise KeyError("not enough or more")
+                else:
+                    pass
+
+                for j in range(len(values)):
+                    if __etype__(values[j].strip()) == int or __etype__(values[j].strip()) == float:
+                        values[j] = eval(values[j].strip())
+                    else:
+                        values[j] = (values[j].strip())
+
+                works = dict(zip(works.keys(), values))
+                for k in works.keys():
+                    try:
+                        nk = k
+                        if nk == "":
+                            nk = __random__()
+                        exec(f"{nk} = {works[k]}")
+                    except BaseException as e:
+                        raise e.__class__(e)
+                
+                todos = todo[1].split("\n")
+                for a_todo in todos:
+                    exec(a_todo.strip())
+
+            elif "object" in msg and "of" in msg and "=" in msg:
+                exec(f"{msg[:msg.index('object')]} {msg[msg.index('of')+2:msg.index("{")].strip()}({msg[msg.index('{')+1:msg.index('}')]})")
+
+            elif "object" in msg:
+                BLOCK = ""
+                items = [lines[x] for x in range(i+1, len(lines))]
+                for k in range(len(items)):
+                    for n in items[k]:
+                        BLOCK += n
+                items = BLOCK[:BLOCK.index("end")].strip().split(",")
+                res = ""
+                for j in range(len(items)):
+                    res += f"self.{items[j].strip()} = {items[j].strip()}\n        "
+
+                try:
+                    exec(f"""
+class {msg[msg.index("object")+6:msg.index(":")].strip()}:
+    def __init__(self, {BLOCK[:BLOCK.index("end")].strip()}):
+        {res.strip()}  
+"""
+                )
+                except BaseException as e:
+                    raise e.__class__(e)
+
             elif "awaitfor" in msg:
                 rand_name_for_async_func = f"__{__random__()}__"
                 exec(
@@ -1879,6 +1984,12 @@ asyncio.run({rand_name_for_async_func}())
 
 """
                 )
+
+            elif ":" in msg and not "def" in msg and not "class" in msg and not "if" in msg and not "elif" in msg and not "else" in msg and not "for" in msg and not "while" in msg\
+                and not "module" in msg and not "def" in msg and not "until" in msg and not "unless" in msg and not "switch" in msg and not "case" in msg and not "try" in msg \
+                and not "except" in msg and not "finally" in msg and not "struct" in msg and not "foreach" in msg and not "when" in msg and not "match" in msg and not "loop" in msg\
+                and not "forever" in msg and not "block" in msg and not "namespace" in msg and not "interface" in msg and not "fun" in msg and not "object":
+                exec(f"print({eval(msg[:msg.index(":")]).__class__.__name__}({msg[:msg.index(":")]}).{msg[msg.index(":")+1:]})")
 
             elif "ensure" in msg:
                 exec(f"assert {msg[msg.index("ensure")+6:]}")
@@ -2732,29 +2843,49 @@ match {msg[msg.index("match")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
             print(UNDERLINE + 'Interrupt' + BASE)
 
         except TodoError as e:
-            print(f"""
-{e.__class__.__name__}: {e}
+#             print(f"""
+# {e.__class__.__name__}: {e}
 
-    ┌─ {__FILE__}: {i+1}
-    │
-    │  {msg.strip()}
-    │  {'^' * len(msg.strip())}  here
+#     ┌─ {__FILE__}: {i+1}
+#     │
+#     │  {msg.strip()}
+#     │  {'^' * len(msg.strip())}  here
     
 
-            """)
+#             """)
+            tb = traceback.extract_tb(sys.exc_info()[2])
+            res = ""  
+            for f in tb:
+                res += f"[py]: {f.lineno}: in {f.name}\n\t"
+            res += f"[moon]: {i+1}: in {__FILE__}"
+
+            print(f"""{__FILE__}: {i+1}: {e}
+stack traceback:
+        {res}
+""")
             break
 
         except PanicError as e:
-            print(f"""
-{e.__class__.__name__}: {e}
+#             print(f"""
+# {e.__class__.__name__}: {e}
 
-    ┌─ {__FILE__}: {i+1}
-    │
-    │  {msg.strip()}
-    │  {'^' * len(msg.strip())}  here
+#     ┌─ {__FILE__}: {i+1}
+#     │
+#     │  {msg.strip()}
+#     │  {'^' * len(msg.strip())}  here
     
 
-            """)
+#             """)
+            tb = traceback.extract_tb(sys.exc_info()[2])
+            res = ""  
+            for f in tb:
+                res += f"[py]: {f.lineno}: in {f.name}\n\t"
+            res += f"[moon]: {i+1}: in {__FILE__}"
+
+            print(f"""{__FILE__}: {i+1}: {e}
+stack traceback:
+        {res}
+""")
             break
 
 #         except FixMeError as e:
@@ -2794,6 +2925,18 @@ match {msg[msg.index("match")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
 
             """
 
+
+            tb = traceback.extract_tb(sys.exc_info()[2])
+            res = ""  
+            for f in tb:
+                res += f"[py]: {f.lineno}: in {f.name}\n\t"
+            res += f"[moon]: {i+1}: in {__FILE__}"
+
+            new_type3 = f"""{__FILE__}: {i+1}: {e}
+stack traceback:
+        {res}
+"""
+
             ERR = f"#<{e.__class__.__name__}: {e}>"
             VARIABLES['$!'] = f"{e.__class__.__name__}: {e}"
 
@@ -2802,7 +2945,7 @@ match {msg[msg.index("match")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
                 continue
                 
             if e.__class__ == SyntaxError and "expected 'except' or 'finally' block" in str(e):
-                print(YELLOW + str(SyntaxError(f"immExpectation: expected 'except' or 'finally' block, line {PURPLE}{i+1}{BASE}")))
+                print(YELLOW + str(SyntaxError(f"SyntaxError: expected 'except' or 'finally' block, line {PURPLE}{i+1}{BASE}")))
                 continue
 
             if e.__class__ == Warning:
@@ -2832,7 +2975,8 @@ match {msg[msg.index("match")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
 
             # print(type3)
             # print(new_type)
-            print(new_type2)
+            # print(new_type2)
+            print(new_type3)
             INFO[i + 1] = False
             break
 

@@ -1059,6 +1059,7 @@
 # var conv2 = 1.5_i
 # var conv3 = 0_b
 # var conv4 = 7895_s
+# var sh = "Moon & Python":split("&")
 
 # with [2, 6, 1, 2] as num:
 #     printf(to_s(num))
@@ -1400,3 +1401,40 @@
 # Stack.add()
 # printf("%d", Stack.top())
 # end
+
+# define_singleton_method("shit", 2162)!
+# puts shit
+
+# class __main__:
+
+#     def __init__(self, value):
+#         self.__value = value
+    
+#     @property
+#     @visibility.private
+#     def sth(self):
+#         return self.__value
+
+# end
+# printf(__main__(5).sth)!
+
+# let 🌑 = "Moon"
+# io.echo("🌑")!
+
+# fun hello():
+#     print("Hello, World")
+# end
+# %hello(void)
+
+# object person:
+#     name, age
+# end
+# me = object of person {"Mobin", 16}
+# puts me.name
+
+# io.scanf ->
+
+# name := "Moon & Python"
+# name:split("&")
+
+# {0, 1, 2}:pop()

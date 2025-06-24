@@ -49,6 +49,10 @@
     never shit = nothing
     # a variable which, it will NOT be used, so: 'puts shit' has Error
 
+    let 🌑 = "Moon"
+    # a variable which will be saved on STACK dict
+    # NOTICE: this is let, and is diffrent with lit
+
 # NOTICE
 When i was writing this file (REDAME), i did NOT write concepts by the degree of importance! I just wrote them wherever i was at the file (README)
 
@@ -438,6 +442,9 @@ io is one of the built-in classes, it has so GOOOOD functions you can use in you
 
     alert(value)
     # returns a warning with msg
+
+    echo(key)
+    # it will print the value of the given key in STACK dict, that you can define vars with let keyword at it
 
 # fmt
 a standard library for Moon
@@ -1170,6 +1177,41 @@ if it(they) is(are) not, passes so __softly__, without any errors
     # 
     # 👆🏻 nothing in the result
 
+# let, fun
+these keywords are used to make variables and functions, but the vars and funcs that are created by these keywords are saved to STACK
+
+    let name = "Moon"
+    io.echo("name")!
+    # use io.echo to print the value of let vars (NOTICE the string 'name')
+
+    fun add(a, b):
+        print(a + b)
+    end
+    %add(7, 8)
+    # to call these funcs, use %
+
+    fun hello():
+        print("Hello, World")
+    end
+    %hello(void)
+    # NOTICE: if your func (with fun keyword) does NOT accept any arg, in the calling (with %), use void or Nil or nil or None as param
+    # %hello(void)
+    # %hello(Nil)
+    # %hello(nil)
+    # %hello(None)
+    # so many (not all) other values are gonna work correctly but for an unwritten rule, we use these!
+
+# :
+this is a short hand for calling a function from a class
+    
+    string := "Moon & Python"
+    string:split("&")
+    # this is as: print(string.split("&"))
+    # NOTICE: Moon will print the result auto, do NOT print it, if you do, you will get an Error
+    
+    # generally: VAR:FUNC(SHIT)
+    # will be:   print(TYPE_OF_VALUE_OF_VAR(VALUE_OF_VAR).FUNC(SHIT))
+
 # var
 creates a new variable
 but var has so many things that you can use them :)
@@ -1287,6 +1329,21 @@ for comparison
     var divByZero = 1 / 0
     puts divByZero
     # undefined
+
+#### :
+this is a short hand for calling a function from a class
+    
+    string := "Moon & Python"
+    var sh = string:split("&")
+    # this is as: string.split("&")
+    
+    # generally: var SOME_NAME = VAR:FUNC(SHIT)
+    # will be:   TYPE_OF_VALUE_OF_VAR(VALUE_OF_VAR).FUNC(SHIT)
+
+    # but this one is a little diffrent from module level ':'
+    # and that is the printing of it
+    # in module level Moon will print the result auto
+    # but in var level Moon will save the result in variable
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------
@@ -1432,6 +1489,15 @@ this is used for telling the coder that that line or maybe that block needs some
 
     fixme as "This code needs your fix to be ran"
 
+# object, of
+with object keyword, you can create your object, then with of you can create an instance of it
+
+    object person:
+        name, age
+    end
+    me = object of person {"Mobin", 16}
+    puts me.name
+
 # some new types
 
     si := short_int(32767)
@@ -1455,6 +1521,8 @@ this is used for telling the coder that that line or maybe that block needs some
     ulli := ulong_long_int(18446744073709551615)
     # (0, 18446744073709551615]
 
+# errors
+in Moon's errors you can see some words like <module>, <string>, and name of functions and classes
 
 # writing python code in moon
 
@@ -1707,6 +1775,10 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     | has      | is like in keyword                                                                                            |
     | lacks    | is like notin                                                                                                 |
     | native   | is for making local variables                                                                                 |
+    | let      | is for making a type of variable which is saved on STACK dict                                                 | 
+    | fun      | is for making a type of function which is saved on STACK dict                                                 |
+    | object   | is for making an object                                                                                       |
+    | of       | is for creating an instance of an object created with object                                                  |
 
 # Other Things:
 

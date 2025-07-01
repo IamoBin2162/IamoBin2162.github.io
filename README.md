@@ -1240,6 +1240,9 @@ this is a short hand for calling a function from a class
     #     name = shit
     #     printf(name)
 
+
+#### NOTICE: this let in `if let` is diffrent with let for creating vars in STACK
+
 # use 
 use is used for importing but in a cool way
 
@@ -1699,8 +1702,8 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     | if       | creates conditions                                                                                            |
     | else     | it can be used with: for, while, if, try, that does when the other blocks are not executed b/c of being false |
     | elif     |                                                    ...                                                        |
-    | until    | do sth until condition is false                                                                               |
-    | unless   | do sth if consition if false                                                                                  |
+    | until    | do sth until condition is true                                                                                |
+    | unless   | do sth if condition is false                                                                                  |
     | class    | creates a new class                                                                                           |
     | switch   | switch-case stmt that check on variables                                                                      |
     | case     | ...                                                                                                           |

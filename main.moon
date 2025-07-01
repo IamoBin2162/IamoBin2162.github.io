@@ -1060,6 +1060,11 @@
 # var conv3 = 0_b
 # var conv4 = 7895_s
 # var sh = "Moon & Python":split("&")
+# var cond = if True:
+#         Nil
+#     else:
+#         nil
+#     end
 
 # with [2, 6, 1, 2] as num:
 #     printf(to_s(num))
@@ -1406,15 +1411,12 @@
 # puts shit
 
 # class __main__:
-
 #     def __init__(self, value):
 #         self.__value = value
-    
 #     @property
 #     @visibility.private
 #     def sth(self):
 #         return self.__value
-
 # end
 # printf(__main__(5).sth)!
 
@@ -1438,3 +1440,48 @@
 # name:split("&")
 
 # {0, 1, 2}:pop()
+
+# ☃ = 0!
+# puts ☃
+
+# puts _G["_G"] == _G
+
+# l := _list([1, 2, 3])
+# l << 4!
+# puts l
+# puts l.first
+# puts l.last
+# s := _str("Hell")
+# printf(s << "o")!
+
+# def main():
+#     printf("Hello, World")
+#     return 0
+# end
+
+# def download():
+#     printf("%d", 1)
+#     io.sleep(2)
+#     printf("%d", 2)
+# end
+# co download()
+# printf("here")!
+
+# p := io.mem() &Nil
+# printf("%s", io.mem() *p)!
+
+# puts io.getenv("SHIT")
+
+# shit := "Mobin"
+# if let shit as name:
+#     printf(name)
+# end
+## if shit is not None:
+##     name = shit
+##     printf(name)
+
+# use sys.getsizeof
+# puts getsizeof("cls")
+# use os.*
+# puts cpu_count()
+

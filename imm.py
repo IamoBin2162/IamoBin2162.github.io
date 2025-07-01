@@ -5,7 +5,7 @@ running a script:
 
     in command line:
 
-        >>> moon FILE_NAME
+        moon FILE_NAME
 """
 
 import sys
@@ -35,6 +35,10 @@ from dataclasses import dataclass
 import string
 from icecream import ic
 import traceback
+import threading
+import datetime
+from dotenv import load_dotenv
+from typing import TypeVar, Generic
 
 def bytecode(src):
     return dis.dis(compile(src, '<string>', 'exec'))
@@ -59,7 +63,6 @@ type unknown = 'unknown'
 type char = 'char'
 type HUGE_VAL = 'HUGE_VAL'
 type perhaps = maybe
-
 start = time.time()
 in_do = False
 inf = float('inf')
@@ -101,6 +104,23 @@ ERR = None
 ok = not ERR
 Any = object()
 # self = __NAME__
+T, E = TypeVar('T'), TypeVar('E')
+
+class Result(Generic[T, E]): ...
+
+class Ok(Result[T, E]):
+    def __init__(self, value):
+        self.value = value
+
+    def __repr__(self):
+        return f"Ok({self.value!r})"
+
+class Error(Result[T, E]):
+    def __init__(self, error):
+        self.error = error
+
+    def __repr__(self):
+        return f"Error({self.error!r})"
 
 class IO:
 
@@ -178,7 +198,7 @@ keywords = [
     'to', 'define', 'nonlocal', 'consume', 'static', 'forever', 'LUA', 'RB', 'ZIG', 'C', 'CPP', 'GLEAM', 'ASM', 'putv', 'var', 'fn', 'isnot', 
     'cast', 'inc', 'decr', 'macro', 'notin', 'also', 'before', 'after', 'perhaps', 'mirror', 'sleep', 'wait', 'mystery', 'nothing', 'undefined', 
     'unknown', 'Nil', 'HUGE_VAL', 'through', 'namespace', 'interface', 'again', 'block', 'does', 'awaitfor', 'ensure', 'fixme', 'has', 'lacks',
-    'sqrt', 'cbrt', 'sin', 'cos', 'tan', 'log', 'ln', 'native', 'proc', 'let', 'fun', 'object', 'of'
+    'sqrt', 'cbrt', 'sin', 'cos', 'tan', 'log', 'ln', 'native', 'proc', 'let', 'fun', 'object', 'of', 'co', 'use', 
 ]   
 keywords.sort()
 
@@ -1008,11 +1028,23 @@ class io:
     def alert(value):
         return Warning(YELLOW + value + BASE)
 
-    def getenv():
-        ...
+    def getenv(name):
+        load_dotenv()
+        return os.getenv(name)
 
     def echo(key):
         print(STACK[key])
+
+    class mem:
+        global POINTERS
+        POINTERS = {}
+        
+        def __and__(self, value):
+            POINTERS[ptr(value)] = value
+            return ptr(value)
+
+        def __mul__(self, pointer):
+            return POINTERS[pointer]
 
 class Imaginary(complex):
     ...
@@ -1492,7 +1524,7 @@ def define_singleton_method(name, value):
     
 def use(mode):
     ...
-    # strict, loose
+    # strict, loose, warning
 
 STACK = {}
 
@@ -1506,7 +1538,46 @@ class void_t:
     def __bool__(self):
         return False
     
+    def __add__(self, v):
+        return v
+    
 void = void_t()
+_G = __GLOBALS__
+
+class _list(list):
+    
+    def __init__(self, iterable):
+        self.it = iterable
+
+    def __lshift__(self, value):
+        self.it.append(value)
+        return self.it
+
+    def __repr__(self):
+        return to_s(self.it)
+    
+    @property
+    def first(self):
+        return self.it[0]
+    
+    @property
+    def last(self):
+        return self.it[-1]
+
+class _str(str):
+    
+    def __init__(self, value):
+        self.v = value
+
+    def __lshift__(self, value):
+        self.v += value
+        return self.v
+
+def callMain():
+    try:
+        exec("main()")
+    except NameError:
+        pass
 
 with open(argv[1], "r") as file:
     lines = file.readlines()
@@ -1797,6 +1868,21 @@ with open(argv[1], "r") as file:
                         except:
                             exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()}{msg[msg.index("??")+2:].strip()}")
 
+                    elif "if" in msg:
+                        BLOCK = ""
+                        items = [lines[x] for x in range(i+1, len(lines))]
+                        for k in range(len(items)):
+                            for n in items[k]:
+                                BLOCK += n
+                                
+                        exec(
+f"""{msg[msg.index("=")+1:].strip()} 
+    {msg[msg.index("var")+3:msg.index("=")+1].strip()} {BLOCK[:BLOCK.index("else")].strip()}
+{BLOCK[BLOCK.index("else"):BLOCK.index(":")+1].strip()}
+    {msg[msg.index("var")+3:msg.index("=")+1].strip()} {BLOCK[BLOCK.index(":")+1:BLOCK.index("end")].strip()}
+
+""")
+
                     elif "do" in msg:
                         BLOCK = ""
                         items = [lines[x] for x in range(i+1, len(lines))]
@@ -1862,8 +1948,8 @@ async def __{msg[msg.index("var")+3:msg.index("=")].strip()}():
                         except ZeroDivisionError as e:
                             exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {undefined}")
 
-            elif ">>" in msg or "<<" in msg:
-                exec(msg)
+            # elif ">>" in msg or "<<" in msg:
+            #     exec(msg)
                 
             elif "=>" in msg and not "final" in msg and not "readonly" in msg and not "$" in msg and not "!" in msg:
                 exec(f"{msg[:msg.index("=>")].strip()}({msg[msg.index("=>")+2:].strip()})")
@@ -1896,8 +1982,18 @@ async def __{msg[msg.index("var")+3:msg.index("=")].strip()}():
                     __pp__(eval(msg[msg.index("puts")+4:].strip()))
                 else:
                     print(eval(msg[msg.index("puts")+4:].strip())) 
+            
+            # elif "test" in msg:
+            #     BLOCK = ""
+            #     items = [lines[x] for x in range(i+1, len(lines))]
+            #     for k in range(len(items)):
+            #         for n in items[k]:
+            #             BLOCK += n
 
-            elif "let" in msg:
+            elif "use" in msg:
+                exec(f"from {msg[msg.index("use")+3:msg.index(".")].strip()} import {msg[msg.index(".")+1:].strip()}")
+                
+            elif "let" in msg and not "if" in msg:
                 STACK[f"{msg[msg.index("let")+3:msg.index("=")].strip()}"] = eval(msg[msg.index("=")+1:])
 
             elif "fun" in msg:
@@ -1949,6 +2045,9 @@ async def __{msg[msg.index("var")+3:msg.index("=")].strip()}():
                 for a_todo in todos:
                     exec(a_todo.strip())
 
+            elif "co" in msg:
+                exec(f"threading.Thread(target={msg[msg.index("co")+2:msg.index("(")].strip()}).start()")
+
             elif "object" in msg and "of" in msg and "=" in msg:
                 exec(f"{msg[:msg.index('object')]} {msg[msg.index('of')+2:msg.index("{")].strip()}({msg[msg.index('{')+1:msg.index('}')]})")
 
@@ -1985,10 +2084,13 @@ asyncio.run({rand_name_for_async_func}())
 """
                 )
 
-            elif ":" in msg and not "def" in msg and not "class" in msg and not "if" in msg and not "elif" in msg and not "else" in msg and not "for" in msg and not "while" in msg\
-                and not "module" in msg and not "def" in msg and not "until" in msg and not "unless" in msg and not "switch" in msg and not "case" in msg and not "try" in msg \
-                and not "except" in msg and not "finally" in msg and not "struct" in msg and not "foreach" in msg and not "when" in msg and not "match" in msg and not "loop" in msg\
-                and not "forever" in msg and not "block" in msg and not "namespace" in msg and not "interface" in msg and not "fun" in msg and not "object":
+            # elif ":" in msg and not "def" in msg and not "class" in msg and not "if" in msg and not "elif" in msg and not "else" in msg and not "for" in msg and not "while" in msg\
+            #     and not "module" in msg and not "def" in msg and not "until" in msg and not "unless" in msg and not "switch" in msg and not "case" in msg and not "try" in msg \
+            #     and not "except" in msg and not "finally" in msg and not "struct" in msg and not "foreach" in msg and not "when" in msg and not "match" in msg and not "loop" in msg\
+            #     and not "forever" in msg and not "block" in msg and not "namespace" in msg and not "interface" in msg and not "fun" in msg and not "object":
+                # exec(f"print({eval(msg[:msg.index(":")]).__class__.__name__}({msg[:msg.index(":")]}).{msg[msg.index(":")+1:]})")
+
+            elif ":" in msg:
                 exec(f"print({eval(msg[:msg.index(":")]).__class__.__name__}({msg[:msg.index(":")]}).{msg[msg.index(":")+1:]})")
 
             elif "ensure" in msg:
@@ -2014,7 +2116,7 @@ asyncio.run({rand_name_for_async_func}())
                 to_what = msg[msg.index("to")+2:]
                 exec(f"{to_what.strip()} = {from_what.strip()}")
 
-            elif "sleep" in msg:
+            elif "sleep" in msg and not "io" in msg and not "time" in msg and not "asyncio" in msg:
                 time.sleep(float(msg[msg.index("sleep")+5:].strip()))
 
             elif "wait" in msg:
@@ -2556,6 +2658,22 @@ except BaseException as e:
                         result += each_elem + "("
                 exec(result + ")" * (count - 1))
             
+            elif "if" in msg and "let" in msg:
+                BLOCK = ""
+                items = [lines[x] for x in range(i+1, len(lines))]
+                for k in range(len(items)):
+                    for n in items[k]:
+                        BLOCK += n
+
+                exec(
+                    f"""
+if {msg[msg.index("let")+3:msg.index("as")].strip()} is not None:
+    {msg[msg.index("as")+2:msg.index(":")].strip()} = {msg[msg.index("let")+3:msg.index("as")].strip()}
+    {BLOCK[:BLOCK.index("end")].strip()}
+
+"""
+                )
+            
             elif "elif" in msg: pass
 
             elif "if" in msg:
@@ -3007,3 +3125,6 @@ except NameError as e:
         pass
     else:
         raise NameError(e)
+
+callMain()
+

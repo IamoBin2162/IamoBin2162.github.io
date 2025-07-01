@@ -1194,12 +1194,28 @@ these keywords are used to make variables and functions, but the vars and funcs 
         print("Hello, World")
     end
     %hello(void)
+
     # NOTICE: if your func (with fun keyword) does NOT accept any arg, in the calling (with %), use void or Nil or nil or None as param
     # %hello(void)
     # %hello(Nil)
     # %hello(nil)
     # %hello(None)
     # so many (not all) other values are gonna work correctly but for an unwritten rule, we use these!
+
+# co
+co is a keyword that runs a function (usually) concurrently (due to GIL)
+
+    def download():
+        printf("%d", 1)
+        io.sleep(2)
+        printf("%d", 2)
+    end
+    co download()
+    printf("here")!
+    
+    # 1
+    # here
+    # 2
 
 # :
 this is a short hand for calling a function from a class
@@ -1211,6 +1227,29 @@ this is a short hand for calling a function from a class
     
     # generally: VAR:FUNC(SHIT)
     # will be:   print(TYPE_OF_VALUE_OF_VAR(VALUE_OF_VAR).FUNC(SHIT))
+
+# if let
+`if let` is an expr that checks for being None, you'd learn better with expamle
+
+    shit := "Mobin"
+    if let shit as name:
+        printf(name)
+    end
+    # PYTHON:
+    # if shit is not None:
+    #     name = shit
+    #     printf(name)
+
+# use 
+use is used for importing but in a cool way
+
+    use sys.getsizeof
+    puts getsizeof("cls")
+
+    use os.*
+    puts cpu_count()
+    # the cool thing is: you don't need to os.cpu_count()
+    # Python: from os import *
 
 # var
 creates a new variable
@@ -1329,6 +1368,18 @@ for comparison
     var divByZero = 1 / 0
     puts divByZero
     # undefined
+
+#### if-else
+
+    var cond = if True:
+            Nil
+        else:
+            nil
+        end
+
+    puts cond
+    # Nil
+    # NOTICE: only if and else is ok, do NOT use elif
 
 #### :
 this is a short hand for calling a function from a class
@@ -1995,6 +2046,19 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     require t
     include t
     # run these to see the diffrence
+
+    l := _list([1, 2, 3])
+    l << 4!
+    puts l
+    puts l.first
+    puts l.last
+    s := _str("Hell")
+    printf(s << "o")!
+
+    p := io.mem() &Nil
+    # pointer to Nil
+    printf("%s", io.mem() *p)!
+    # derefrencing
 
     lit 5 = 6
     # don't worry, no error here

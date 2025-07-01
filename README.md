@@ -1830,6 +1830,8 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     | fun      | is for making a type of function which is saved on STACK dict                                                 |
     | object   | is for making an object                                                                                       |
     | of       | is for creating an instance of an object created with object                                                  |
+    | co       | is for running a fuction like a thread                                                                        |
+    | use      | is for importing                                                                                              |
 
 # Other Things:
 

@@ -9,9 +9,9 @@
 # 		self.year = year
 # end
 # # 'end' is nessecery for ending classes
-# BMW = Car("BMW", 2024)
+# BMW := Car("BMW", 2024)
 # # creating a instance of Car to BMW object
-# <println(BMW.name, BMW.year)>
+# <print(BMW.name, BMW.year)>
 # # you can use <> for calling function
 # # printing the name and year of the BMW
 
@@ -61,10 +61,7 @@
 
 # double = lambda num: num * 2
 # # creating lambda function
-# show_msg = fn.new("Moon Programming Language")
-# # creating lambda-like function, but with 'fn' class
-# # with 'new' function at that class
-# <println(double(7), show_msg())>
+# <println(double(7)>
 
 # <println(math.acos(-1))>
 # # using math module functions
@@ -129,7 +126,7 @@
 # # Hello Mobin
 # # None
 
-# # ** usage of -> in variable for calling functions are not allowed !! **
+# # ** usage of -> in variables for calling functions are not allowed !! **
 
 # def math(a, b, func):
 # 	# a function to the func with a and b
@@ -171,10 +168,6 @@
 #   # that means when the COND is false this block (else) will be executed
 # 	println("finished process")
 # end
-
-# exec println(7 + 7)
-# exec and eval are keywords
-# eval println(7 + 7)
 
 # func = (a, b) -> a + b
 # # lambda functions using ->
@@ -1065,6 +1058,7 @@
 #     else:
 #         nil
 #     end
+# var area = (r = 2; __pi = 3.14; __pi * r * r)
 
 # with [2, 6, 1, 2] as num:
 #     printf(to_s(num))
@@ -1469,6 +1463,8 @@
 
 # p := io.mem() &Nil
 # printf("%s", io.mem() *p)!
+# io.mem().imprint("User.name", "Mobin")!
+# puts io.mem().recall("User.name")
 
 # puts io.getenv("SHIT")
 
@@ -1476,12 +1472,66 @@
 # if let shit as name:
 #     printf(name)
 # end
-## if shit is not None:
-##     name = shit
-##     printf(name)
+# # if shit is not None:
+# #     name = shit
+# #     printf(name)
 
 # use sys.getsizeof
 # puts getsizeof("cls")
 # use os.*
 # puts cpu_count()
 
+# print(make(int))!
+# print(make(float))!
+# print(make(complex))!
+# print(make(str))!
+# print(make(list))!
+# print(make(tuple))!
+# print(make(dict))!
+# print(make(set))!
+# print(make(frozenset))!
+# print(make(range))!
+# print(make(Range))!
+# print(make(bool))!
+# print(make(bytes))!
+# print(make(bytearray))!
+# print(make(memoryview))!
+# print(make(None))!
+# print(make(Nil))!
+
+# idx := 0
+# whilst idx < 5:
+#     printf("%d", idx)
+#     idx += 1
+# end
+
+# affirm False, ""
+
+# printf("%s", Symbol(":MyMoon🌑"))!
+
+# print(to_sym("🌑"))
+
+# puts Symbol(":10").next()
+
+# raise RuntimeError(void)
+
+# puts False and "yes" or "no"
+
+# load('print(0)')()!
+
+# puts _V
+
+# Kernel.printf(Kernel.io.mem() &None)!
+
+# $a = () -> Nil
+# $b = ?h
+# $c = %s[Hello]
+# $d = %(Hello)
+# $e = (0..10)
+# $f = !True
+
+# c := channel(str)
+# c >> "Hello, World"!
+# c > "Bye, World"!
+# print(c << void)!
+# print(c < void)!

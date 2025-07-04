@@ -38,7 +38,9 @@ import traceback
 import threading
 import datetime
 from dotenv import load_dotenv
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, Self
+import inspect
+import builtins
 
 def bytecode(src):
     return dis.dis(compile(src, '<string>', 'exec'))
@@ -104,23 +106,25 @@ ERR = None
 ok = not ERR
 Any = object()
 # self = __NAME__
-T, E = TypeVar('T'), TypeVar('E')
 
-class Result(Generic[T, E]): ...
+# T: TypeVar = TypeVar('T')
+# E: TypeVar = TypeVar('E')
 
-class Ok(Result[T, E]):
-    def __init__(self, value):
-        self.value = value
+# class Result(Generic[T, E]): ...
 
-    def __repr__(self):
-        return f"Ok({self.value!r})"
+# class Ok(Result[T, E]):
+#     def __init__(self, value):
+#         self.value = value
 
-class Error(Result[T, E]):
-    def __init__(self, error):
-        self.error = error
+#     def __repr__(self):
+#         return f"Ok({self.value!r})"
 
-    def __repr__(self):
-        return f"Error({self.error!r})"
+# class Error(Result[T, E]):
+#     def __init__(self, error):
+#         self.error = error
+
+#     def __repr__(self):
+#         return f"Error({self.error!r})"
 
 class IO:
 
@@ -198,7 +202,7 @@ keywords = [
     'to', 'define', 'nonlocal', 'consume', 'static', 'forever', 'LUA', 'RB', 'ZIG', 'C', 'CPP', 'GLEAM', 'ASM', 'putv', 'var', 'fn', 'isnot', 
     'cast', 'inc', 'decr', 'macro', 'notin', 'also', 'before', 'after', 'perhaps', 'mirror', 'sleep', 'wait', 'mystery', 'nothing', 'undefined', 
     'unknown', 'Nil', 'HUGE_VAL', 'through', 'namespace', 'interface', 'again', 'block', 'does', 'awaitfor', 'ensure', 'fixme', 'has', 'lacks',
-    'sqrt', 'cbrt', 'sin', 'cos', 'tan', 'log', 'ln', 'native', 'proc', 'let', 'fun', 'object', 'of', 'co', 'use', 
+    'sqrt', 'cbrt', 'sin', 'cos', 'tan', 'log', 'ln', 'native', 'proc', 'let', 'fun', 'object', 'of', 'co', 'use', 'whilst', 'affirm', 
 ]   
 keywords.sort()
 
@@ -244,13 +248,53 @@ def swap(a, b):
     a, b = b, a
     return a, b
 
+def load(expr):
+    return lambda: exec(expr)
+
+# def dofile(file=stdout):
+#     if file != stdout:
+#         with open(file, "r") as _f:
+#             __clear_exec__()
+#             for _line in _f.readlines():
+#                 mexec(_line)
+    
+#     else:
+#         _p = io.scanf()
+#         __clear_exec__()
+#         mexec(_p)
+#     __clear_exec__()
+
 class Symbol:
 
     def __init__(self, arg):
         self.arg = arg
+        if not self.arg.strip().startswith(":"):
+            raise NameError(f"symbol without ':' ?, try :{self.arg}")
     
     def __repr__(self) -> str:
-        return f":{self.arg}"
+        return self.arg
+
+    def to_s(self):
+        return str(self.arg[self.arg.index(":")+1:])
+
+    def next(self):
+        # gets next unicode char
+        c = str(self.arg[self.arg.index(":")+1:])
+        code = ord(c)
+        return chr(code + 1)
+
+    def startswith(self, with_what):
+        if str(self.arg[self.arg.index(":")+1:]).startswith(with_what):
+            return True
+        return False
+
+    def endswith(self, with_what):
+        if str(self.arg[self.arg.index(":")+1:]).endswith(with_what):
+            return True
+        return False
+
+    def __len__(self):
+        return len(str(self.arg[self.arg.index(":")+1:]))
 
 def __etype__(input_data):
     try:
@@ -555,8 +599,8 @@ def to_b(value) -> bool:
 def to_o(value) -> oct:
     return oct(value)
 
-def to_n(value) -> nil:
-    return nil
+def to_n(value):
+    return Nil
 
 def to_d(key, value) -> dict:
     return { key : value }
@@ -569,6 +613,9 @@ def to_z(value) -> int:
 
 def to_r(value) -> Fraction:
     return Fraction(value)
+
+def to_sym(value) -> Symbol:
+    return Symbol(f":{value}")
 
 def responds_to(__obj: object, __name: str) -> bool:
     return hasattr(__obj, __name)
@@ -743,6 +790,53 @@ def seq(a, b):
     if type(a) == type(b) and a == b and ptr(a) == ptr(b) and id(a) == id(b):
         return True
     return False
+
+class nil_t:
+
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+    
+    def __repr__(self) -> str:
+        return "Nil"
+    
+    def __bool__(self):
+        return False
+    
+    def __eq__(self, value):
+        return isinstance(value, nil_t)
+    
+    def __call__(self, *args, **kwds):
+        return self
+    
+    def __setattr__(self, __name, __value):
+        raise TypeError("cannot modify Nil")
+    
+    def __getattr__(self, name):
+        print(f"[TRACE] accessed Nil attribute: {name}")
+        return self
+    
+    def __len__(self):
+        return 0
+    
+    def __iter__(self):
+        return iter([])
+    
+    def __getitem__(self, idx):
+        raise IndexError("Nil does not support item access")
+    
+    def __contains__(self, value):
+        return False
+    
+    def __setitem__(self, idx, value):
+        raise SyntaxError("Nil does not support item setting")
+    
+Nil = nil_t()
+NilPtr = ptr(Nil)
+NonePtr = ptr(None)
 
 class io:
 
@@ -995,7 +1089,6 @@ class io:
     def assertEqual(a, b):
         assert a == b, f"{a} and {b} are not equal"
 
-
     def assertTrue(a):
         assert a, f"{a} is not true"
 
@@ -1036,8 +1129,10 @@ class io:
         print(STACK[key])
 
     class mem:
-        global POINTERS
+        
+        global POINTERS, STORE
         POINTERS = {}
+        STORE = {}
         
         def __and__(self, value):
             POINTERS[ptr(value)] = value
@@ -1045,6 +1140,19 @@ class io:
 
         def __mul__(self, pointer):
             return POINTERS[pointer]
+
+        def recall(self, key):
+            return STORE.get(key, Nil)
+
+        def imprint(self, key, value):
+            STORE[key] = value
+
+        def forget(self, key):
+            return STORE.pop(key)
+
+        def clear(self):
+            STORE.clear()
+            return Nil
 
 class Imaginary(complex):
     ...
@@ -1065,15 +1173,88 @@ def chomp(__str: str):
 
 argc = lenof(argv)
 
+class NoMethodFoundError(BaseException): ...
+
+class _KERNEL_META(type):
+    def __getattr__(cls, name):
+        frame = inspect.currentframe().f_back
+
+        if name in frame.f_locals:
+            return frame.f_locals[name]
+
+        elif name in frame.f_globals:
+            return frame.f_globals[name]
+
+        elif hasattr(builtins, name):
+            return getattr(builtins, name)
+        
+        else:
+            raise NoMethodFoundError(f"Kernel has no attr {name}")
+        
+class Kernel(metaclass=_KERNEL_META): ...
+
 class SizeError(Exception): ...
-def make(__type, message = "", size = None):
-    if size == None:
-        size = 0
-        return __type(message)
+# def make(__type, message = "", size = None):
+#     if size == None:
+#         size = 0
+#         return __type(message)
     
-    if size is not None and sizeof(__type(message)) > size:
-        raise SizeError(f"bigger size than expected, expect {size} but got {sizeof(__type(message))}")
-    return __type(message)
+#     if size is not None and sizeof(__type(message)) > size:
+#         raise SizeError(f"bigger size than expected, expect {size} but got {sizeof(__type(message))}")
+
+#     return __type(message)
+
+def make(T):
+    if T == int:
+        return 0
+
+    elif T == float:
+        return 0.0
+
+    elif T == complex:
+        return 0 + 1j
+
+    elif T == str:
+        return ""
+
+    elif T == list:
+        return []
+
+    elif T == tuple:
+        return tuple()
+
+    elif T == range:
+        return range(0, 1)
+
+    elif T == dict:
+        return dict()
+
+    elif T == set:
+        return set()
+
+    elif T == frozenset:
+        return frozenset()
+
+    elif T == bool:
+        return True
+
+    elif T == bytes:
+        return bytes()
+
+    elif T == bytearray:
+        return bytearray()
+
+    elif T == memoryview:
+        return memoryview
+
+    elif T == None:
+        return None
+
+    elif T == Nil:
+        return Nil
+
+    elif T == Range:
+        return Range(0, 1).new()
 
 def system(command):
     return os.system(command)
@@ -1094,12 +1275,18 @@ def mexec(code):
 def parseStmt(value):
     return mexec(value)
 
+def parseInt(value):
+    return int(value)
+
+def parseFloat(value):
+    return float(value)
+
 def TEST():
     print(f"HI FROM {LINE}")
 
 def debug(expr):
     try:
-        exec(expr)
+        expr
     except BaseException as e:
         return Error(), Nil, e
     else:
@@ -1126,53 +1313,6 @@ def div(a, b):
         return a / b
     except ZeroDivisionError:
         return undefined
-
-class nil_t:
-
-    _instance = None
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
-    
-    def __repr__(self) -> str:
-        return "Nil"
-    
-    def __bool__(self):
-        return False
-    
-    def __eq__(self, value):
-        return isinstance(value, nil_t)
-    
-    def __call__(self, *args, **kwds):
-        return self
-    
-    def __setattr__(self, __name, __value):
-        raise TypeError("cannot modify Nil")
-    
-    def __getattr__(self, name):
-        print(f"[TRACE] accessed Nil attribute: {name}")
-        return self
-    
-    def __len__(self):
-        return 0
-    
-    def __iter__(self):
-        return iter([])
-    
-    def __getitem__(self, idx):
-        raise IndexError("Nil does not support item access")
-    
-    def __contains__(self, value):
-        return False
-    
-    def __setitem__(self, idx, value):
-        raise SyntaxError("Nil does not support item setting")
-    
-Nil = nil_t()
-NilPtr = ptr(Nil)
-NonePtr = ptr(None)
 
 def unreachable(msg = ""):
     assert False, msg
@@ -1521,10 +1661,6 @@ e = math.e
 def define_singleton_method(name, value):
     globals()[name] = value
     return Nil
-    
-def use(mode):
-    ...
-    # strict, loose, warning
 
 STACK = {}
 
@@ -1543,6 +1679,7 @@ class void_t:
     
 void = void_t()
 _G = __GLOBALS__
+_V = __VERSION__
 
 class _list(list):
     
@@ -1572,6 +1709,49 @@ class _str(str):
     def __lshift__(self, value):
         self.v += value
         return self.v
+
+class channel:
+
+    def __init__(self, __type):
+        self.t = __type
+        self.ch = queue.Queue()
+
+    def __rshift__(self, value):
+        if type(value) == self.t:
+            self.ch.put(value)
+
+        else:
+            raise TypeError(f"expected {self.t} but got {type(value)}")
+
+    def __lshift__(self, value):
+        if value in [void, Nil, nil, None]:
+            return self.ch.get()
+
+        else:
+            raise NameError(f"{value} is not acceptible, use void or Nil or nil or None")
+
+    def __gt__(self, value):
+        if type(value) == self.t:
+            self.ch.put_nowait(value)
+
+        else:
+            raise TypeError(f"expected {self.t} but got {type(value)}")
+
+    def __lt__(self, value):
+        if value in [void, Nil, nil, None]:
+            return self.ch.get_nowait()
+
+        else:
+            raise NameError(f"{value} is not acceptible, use void or Nil or nil or None")
+
+    # def isEmpty(self):
+    #     return self.ch.empty()
+
+    # def isFull(self):
+    #     return self.ch.full()
+
+    # def size(self):
+    #     return self.ch.qsize() 
 
 def callMain():
     try:
@@ -1618,6 +1798,14 @@ with open(argv[1], "r") as file:
                     for n in items[k]:
                         BLOCK += n
                 exec(f"{msg[msg.index("&")+1:]}{BLOCK[:BLOCK.index("end")]}")
+            
+            # elif "COMMENT" in msg and "(" in msg:
+            #     BLOCK = ""
+            #     items = [lines[x] for x in range(i+1, len(lines))]
+            #     for k in range(len(items)):
+            #         for n in items[k]:
+            #             BLOCK += n
+            #     continue
 
             elif "CPP" in msg and "(" in msg:
                 BLOCK = ""
@@ -1722,7 +1910,7 @@ with open(argv[1], "r") as file:
                 if ":" in name: raise SyntaxError("type annotation is not allowed in var")
 
                 else:
-
+                    
                     if "~>" in value:
                         try:
                             eval(msg[msg.index("=")+1:msg.index("~>")].strip())
@@ -1736,6 +1924,14 @@ with open(argv[1], "r") as file:
 
                     elif "through" in msg:
                         exec(f"{msg[msg.index("var")+3:msg.index("=")+1].strip()}Range({msg[msg.index("=")+1:msg.index("through")]}, {msg[msg.index("through")+7:].strip()}).new()")
+
+                    elif "(" in msg and ")" in msg and ";" in msg:
+                        messages = msg[msg.index("(")+1:msg.index(")")].split(";")
+                        for idx in range(len(messages)):
+                            if messages[idx] == messages[-1]:
+                                exec(f"{msg[msg.index("var")+3:msg.index("=")+1].strip()} {messages[idx].strip()}")
+                            else:
+                                exec(messages[idx].strip())
 
                     elif "<=>" in msg:
                         first_one = msg[msg.index("=")+1:msg.index("<=>")].strip()
@@ -1990,9 +2186,93 @@ async def __{msg[msg.index("var")+3:msg.index("=")].strip()}():
             #         for n in items[k]:
             #             BLOCK += n
 
+
             elif "use" in msg:
                 exec(f"from {msg[msg.index("use")+3:msg.index(".")].strip()} import {msg[msg.index(".")+1:].strip()}")
-                
+            
+            elif msg.startswith("$") and "=" in msg:
+
+                # if msg[msg.index("$")+1:msg.index("=")].strip().isupper() or msg[msg.index("$")+1:msg.index("=")].strip()[0].isupper():
+                    # if msg[msg.index("$")+1:msg.index("=")].strip() in __GLOBALS__.keys() or msg[msg.index("$")+1:msg.index("=")].strip() in __LOCALS__.keys():
+                    #     print(YELLOW + f"Warning: already initialized constant '{msg[msg.index("$")+1:msg.index("=")].strip()}'" + BASE)
+                        # raise Warning(YELLOW + f"Warning: already initialized constant '{msg[msg.index("$")+1:msg.index("=")].strip()}'" + BASE)
+                    
+                if "->" in msg:
+                    exec(
+                    f"""
+{msg[msg.index("$")+1:msg.index("=")].strip()} = lambda {msg[msg.index("(")+1:msg.index(")")].strip()}: {msg[msg.index("->")+2:].strip()}
+    """
+                )
+
+                elif msg[msg.index("=")+1:].strip().startswith("?"):
+                    if len(msg[msg.index("?")+1:].strip()) > 1:
+                        raise SyntaxError(f"? string should be char (length 1 needed, {len(msg[msg.index('?')+1:].strip())} is given)")
+                    
+                    if msg[msg.index("?")+1:].strip() == "'":
+                        exec(
+                        f"""
+{msg[msg.index("$")+1:msg.index("=")].strip()} = "{msg[msg.index("?")+1:].strip()}"
+    """
+                    )
+                        continue
+
+                    exec(
+                        f"""
+{msg[msg.index("$")+1:msg.index("=")].strip()} = '{msg[msg.index("?")+1:].strip()}'
+    """
+                    )
+
+                elif "%s" in msg[msg.index("=")+1:].strip() and "[" in msg and "]" in msg:
+                    if "'" in msg[msg.index("%s[")+3:msg.index("]")].strip():
+                        exec(
+                        f"""
+{msg[msg.index("$")+1:msg.index("=")].strip()} = "{msg[msg.index("%s[")+3:msg.index("]")].strip()}"
+    """
+                    )
+                        continue
+
+                    exec(
+                        f"""
+{msg[msg.index("$")+1:msg.index("=")].strip()} = '{msg[msg.index("%s[")+3:msg.index("]")].strip()}'
+    """
+                    )
+
+                elif "%(" in msg[msg.index("=")+1:].strip() and ")" in msg[msg.index("=")+1:].strip():
+                    if "'" in msg[msg.index("%(")+2:msg.index(")")].strip():
+                        exec(
+                        f"""
+{msg[msg.index("$")+1:msg.index("=")].strip()} = "{msg[msg.index("%(")+2:msg.index(")")].strip()}"
+    """
+                    )
+                        continue
+
+                    exec(
+                        f"""
+{msg[msg.index("$")+1:msg.index("=")].strip()} = '{msg[msg.index("%(")+2:msg.index(")")].strip()}'
+    """
+                    )
+
+                elif msg[msg.index("=")+1:].strip().startswith("!"):
+                    exec(
+                        f"""
+{msg[msg.index("$")+1:msg.index("=")].strip()} = not {eval(msg[msg.index("!")+1:].strip())}
+    """
+                    )
+
+                elif ".." in msg and "(" in msg and ")" in msg:
+                    exec(
+                        f"""
+{msg[msg.index("$")+1:msg.index("=")].strip()} = range{msg[msg.index("=")+1:].strip().split("..")[0].strip()}, {msg[msg.index("=")+1:].strip().split("..")[1].strip()}
+    """
+                    )
+
+                else:
+                    exec(
+                    f"""
+{msg[msg.index("$")+1:msg.index("=")]} = {msg[msg.index('=')+1:].strip()}
+    """
+                )
+                    
             elif "let" in msg and not "if" in msg:
                 STACK[f"{msg[msg.index("let")+3:msg.index("=")].strip()}"] = eval(msg[msg.index("=")+1:])
 
@@ -2084,17 +2364,20 @@ asyncio.run({rand_name_for_async_func}())
 """
                 )
 
-            # elif ":" in msg and not "def" in msg and not "class" in msg and not "if" in msg and not "elif" in msg and not "else" in msg and not "for" in msg and not "while" in msg\
-            #     and not "module" in msg and not "def" in msg and not "until" in msg and not "unless" in msg and not "switch" in msg and not "case" in msg and not "try" in msg \
-            #     and not "except" in msg and not "finally" in msg and not "struct" in msg and not "foreach" in msg and not "when" in msg and not "match" in msg and not "loop" in msg\
-            #     and not "forever" in msg and not "block" in msg and not "namespace" in msg and not "interface" in msg and not "fun" in msg and not "object":
-                # exec(f"print({eval(msg[:msg.index(":")]).__class__.__name__}({msg[:msg.index(":")]}).{msg[msg.index(":")+1:]})")
-
-            elif ":" in msg:
+            elif ":" in msg and not "def" in msg and not "class" in msg and not "if" in msg and not "elif" in msg and not "else" in msg and not "for" in msg and not "while" in msg\
+                and not "module" in msg and not "def" in msg and not "until" in msg and not "unless" in msg and not "switch" in msg and not "case" in msg and not "try" in msg \
+                and not "except" in msg and not "finally" in msg and not "struct" in msg and not "foreach" in msg and not "when" in msg and not "match" in msg and not "loop" in msg\
+                and not "forever" in msg and not "block" in msg and not "namespace" in msg and not "interface" in msg and not "fun" in msg and not "object":
                 exec(f"print({eval(msg[:msg.index(":")]).__class__.__name__}({msg[:msg.index(":")]}).{msg[msg.index(":")+1:]})")
+
+            # elif ":" in msg:
+            #     exec(f"print({eval(msg[:msg.index(":")]).__class__.__name__}({msg[:msg.index(":")]}).{msg[msg.index(":")+1:]})")
 
             elif "ensure" in msg:
                 exec(f"assert {msg[msg.index("ensure")+6:]}")
+
+            elif "affirm" in msg:
+                exec(f"assert {msg[msg.index("affirm")+6:]}")
 
             elif "also" in msg:
                 first_one = msg[:msg.index("also")]
@@ -2520,89 +2803,6 @@ for {msg[msg.index("as")+2:msg.index(":")].strip()} in {msg[msg.index("with")+4:
 {msg}\n{BLOCK[:BLOCK.index("end")]}
 """
                 )
-
-            elif msg.startswith("$") and "=" in msg:
-
-                # if msg[msg.index("$")+1:msg.index("=")].strip().isupper() or msg[msg.index("$")+1:msg.index("=")].strip()[0].isupper():
-                    # if msg[msg.index("$")+1:msg.index("=")].strip() in __GLOBALS__.keys() or msg[msg.index("$")+1:msg.index("=")].strip() in __LOCALS__.keys():
-                    #     print(YELLOW + f"Warning: already initialized constant '{msg[msg.index("$")+1:msg.index("=")].strip()}'" + BASE)
-                        # raise Warning(YELLOW + f"Warning: already initialized constant '{msg[msg.index("$")+1:msg.index("=")].strip()}'" + BASE)
-                    
-                if "->" in msg:
-                    exec(
-                    f"""
-{msg[msg.index("$")+1:msg.index("=")].strip()} = lambda {msg[msg.index("(")+1:msg.index(")")].strip()}: {msg[msg.index("->")+2:].strip()}
-    """
-                )
-
-                elif msg[msg.index("=")+1:].strip().startswith("?"):
-                    if len(msg[msg.index("?")+1:].strip()) > 1:
-                        raise SyntaxError(f"? string should be char (length 1 needed, {len(msg[msg.index('?')+1:].strip())} is given)")
-                    
-                    if msg[msg.index("?")+1:].strip() == "'":
-                        exec(
-                        f"""
-{msg[msg.index("$")+1:msg.index("=")].strip()} = "{msg[msg.index("?")+1:].strip()}"
-    """
-                    )
-                        continue
-
-                    exec(
-                        f"""
-{msg[msg.index("$")+1:msg.index("=")].strip()} = '{msg[msg.index("?")+1:].strip()}'
-    """
-                    )
-
-                elif "%s" in msg[msg.index("=")+1:].strip() and "[" in msg and "]" in msg:
-                    if "'" in msg[msg.index("%s[")+3:msg.index("]")].strip():
-                        exec(
-                        f"""
-{msg[msg.index("$")+1:msg.index("=")].strip()} = "{msg[msg.index("%s[")+3:msg.index("]")].strip()}"
-    """
-                    )
-                        continue
-
-                    exec(
-                        f"""
-{msg[msg.index("$")+1:msg.index("=")].strip()} = '{msg[msg.index("%s[")+3:msg.index("]")].strip()}'
-    """
-                    )
-
-                elif "%(" in msg[msg.index("=")+1:].strip() and ")" in msg[msg.index("=")+1:].strip():
-                    if "'" in msg[msg.index("%(")+2:msg.index(")")].strip():
-                        exec(
-                        f"""
-{msg[msg.index("$")+1:msg.index("=")].strip()} = "{msg[msg.index("%(")+2:msg.index(")")].strip()}"
-    """
-                    )
-                        continue
-
-                    exec(
-                        f"""
-{msg[msg.index("$")+1:msg.index("=")].strip()} = '{msg[msg.index("%(")+2:msg.index(")")].strip()}'
-    """
-                    )
-
-                elif msg[msg.index("=")+1:].strip().startswith("!"):
-                    exec(
-                        f"""
-{msg[msg.index("$")+1:msg.index("=")].strip()} = not {eval(msg[msg.index("!")+1:].strip())}
-    """
-                    )
-
-                elif ".." in msg and "(" in msg and ")" in msg:
-                    exec(
-                        f"""
-{msg[msg.index("$")+1:msg.index("=")].strip()} = range{msg[msg.index("=")+1:].strip().split("..")[0].strip()}, {msg[msg.index("=")+1:].strip().split("..")[1].strip()}
-    """
-                    )
-
-                else:
-                    exec(
-                    f"""
-{msg[msg.index("$")+1:msg.index("=")]} = {msg[msg.index('=')+1:].strip()}
-    """
-                )
                 
             elif "next" in msg:
                 continue
@@ -2786,6 +2986,19 @@ match {msg[msg.index("match")+5:].strip()}\n{BLOCK[:BLOCK.index("end")]}
                 for k in range(len(items)):
                     for n in items[k]:
                         BLOCK += n
+                exec(
+                    f"""
+{msg.strip()}\n{BLOCK[:BLOCK.index("end")]}
+"""
+                )
+
+            elif "whilst" in msg:
+                BLOCK = ""
+                items = [lines[x] for x in range(i+1, len(lines))]
+                for k in range(len(items)):
+                    for n in items[k]:
+                        BLOCK += n
+                msg = msg.replace("whilst", "while")
                 exec(
                     f"""
 {msg.strip()}\n{BLOCK[:BLOCK.index("end")]}
@@ -3050,7 +3263,7 @@ stack traceback:
                 res += f"[py]: {f.lineno}: in {f.name}\n\t"
             res += f"[moon]: {i+1}: in {__FILE__}"
 
-            new_type3 = f"""{__FILE__}: {i+1}: {e}
+            new_type3 = f"""{__FILE__}: {i+1}: {e} ({UNDERLINE}{BOLD}{e.__class__.__name__}{BASE})
 stack traceback:
         {res}
 """

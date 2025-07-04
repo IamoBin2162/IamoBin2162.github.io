@@ -61,6 +61,9 @@ as you see in code, we use '#' for writing comments
     
     # moon is a programming language
 
+NOTICE: Moon doesn't have a multi-line comments
+NOTICE: Do NOT write comments in front of an expr, it will NOT be ran
+
 # lit
 this is a keyword to make a varaible, but this will be saved into VARIABLES dict!
 maybe we can call it a version of local variables
@@ -68,6 +71,24 @@ but you access these variables only with io.vprint or io.vprintln or io.vprintf
 
     lit $name = "Mobin"
     io.vprintln('$name')!
+
+# $
+as you know, it's a way for creating variables, but it has some features, like: 
+    
+    $a = () -> Nil
+    # lambda
+    $b = ?h
+    # char
+    $c = %s[Hello]
+    # string
+    $d = %(Hello)
+    # string
+    $e = (0..10)
+    # range
+    $f = !True
+    # ! = not
+    $g = "Woops"
+    # normal shit
 
 # OOP:
 moon is an object-oriented programming language
@@ -1156,6 +1177,45 @@ if you've ever programmed in Go, you know what channels are
     # chan.is_empty and chan.is_full checks for emptyness and fullness of that channel
     # chan.size returns the size of the channel
 
+    # NOTICE: in chan class, when you close a chan, you can't make another one
+
+    # ------------------------------------------------------------
+    # ------------------------------------------------------------
+    # ------------------------------------------------------------
+    # ------------------------------------------------------------
+
+
+    # we have another type of channel which uses a strict typing shit and uses >> and << for putting and getting values from a channel
+    # which is on channel class not chan
+
+    c = channel(str)!
+    # a channel of type string (strict)
+    c >> "Hello, World"!
+    # putting value in c channel
+    print(c << void)!
+    # getting the value
+    # for the value of >> use: void, Nil, nil or None
+    # other values cause error
+
+    c2 = channel(int)!
+    c2 > 2162!
+    # notice we used > not >>
+    print(c2 < Nil)!
+    print(c2 < Nil)!
+    # if we do it by << not <, we will not get an error, but we get a waiting-like-shit
+    # but because of doing it by <<, it will give us an error
+
+    # > puts an item on channel without blocking
+    # >> puts and item on channel
+    # < gets an item on channel and delets it without blocking
+    # << gets and item on channel and delets it
+
+    # NOTICE: in channel class, you can have more than one channel, opposite of chan
+    # There were some funcs like size or is_empty or etc. that we had at chan, but we know that they are not reliable (as queue module (py) says), so we didn't implemented them
+
+    # Moon recomends you, to use channel, not chan
+
+
 # putv
 it is for printing the value of lit variables
 
@@ -1253,6 +1313,16 @@ use is used for importing but in a cool way
     puts cpu_count()
     # the cool thing is: you don't need to os.cpu_count()
     # Python: from os import *
+
+# load(expr)
+a function that returns a function that runs expr
+
+    f := load('print(0)')
+    f()!
+
+    # or
+    
+    load('print(0)')()!
 
 # var
 creates a new variable
@@ -1399,6 +1469,14 @@ this is a short hand for calling a function from a class
     # in module level Moon will print the result auto
     # but in var level Moon will save the result in variable
 
+#### ;
+you can use '()' and split your exprs with ';' and save them in your var
+NOTICE: the last expr result will be saved in your var. The other will be ran normally with exec
+
+    var area = (r = 2; __pi = 3.14; __pi * r * r)
+    puts area
+    # 12.56
+
 ------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1414,6 +1492,15 @@ decr is --
     puts num
     # 5
 
+# whilst
+as like as while
+
+    idx := 0
+    whilst idx < 5:
+        printf("%d", idx)
+        idx += 1
+    end
+    
 # cast
 a keyword that is available only with var
 
@@ -1576,7 +1663,44 @@ with object keyword, you can create your object, then with of you can create an 
     # (0, 18446744073709551615]
 
 # errors
-in Moon's errors you can see some words like <module>, <string>, and name of functions and classes
+in Moon's errors you can see some words like `<module>`, `<string>`, and name of functions and classes
+
+`<module>` shows that error happend in imm.py in module level
+
+`<string>` shows that an error happend while using exec or eval
+
+`[py]` shows that an error happend at imm.py, either in module level or function or method or etc.
+
+`[moon]` shows that an error happend at your moon file
+
+e.g:
+
+    io.throw(Error, "Some shit happend")!                                  *****
+
+
+    ERROR MESSAGE AT OUTPUT:
+
+    .\main.moon: 1488: Some shit happend (Error)                            no. 1
+    stack traceback:                                                        no. 2
+        [py]: 1601: in <module>                                             no. 3
+        [py]: 1: in <module>                                                no. 4
+        [py]: 762: in throw                                                 no. 5
+        [moon]: 1488: in .\main.moon                                        no. 6
+
+in no.1: 1488 shows line of error in your moon file
+
+in no.1: "Some shit happend" is the message of error that we created it by io.throw by ourselves (in *****)
+
+in no.1: (Error) shows which type of error happend (as you see we raised (or maybe we can say threw) an "Error") (in *****)
+
+in no.3: 1601 shows line of error in imm.py (if you look at it, it is refered to "!" expr, that we used at ***** to run it)
+
+in no.5: 762  shows line of error in imm.py (if you look at it, it is refered to throw function at io, that we used it here, at this error shows us)
+
+in no.6: 1488 shows line of error in your moon file (as same as in no.1)
+
+
+#### NOTICE: these line may be changed, because of being updated or sth else
 
 # writing python code in moon
 
@@ -1835,6 +1959,8 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     | of       | is for creating an instance of an object created with object                                                  |
     | co       | is for running a fuction like a thread                                                                        |
     | use      | is for importing                                                                                              |
+    | affirm   | is for asserting                                                                                              |
+    | whilst   | is just like while                                                                                            |
 
 # Other Things:
 
@@ -2064,6 +2190,13 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     # pointer to Nil
     printf("%s", io.mem() *p)!
     # derefrencing
+    io.mem().imprint("User.name", "Mobin")!
+    # imprinting: writing sth on memory ('Mobin' at the key 'User.name')
+    puts io.mem().recall("User.name")
+    # recalling: loading the value of the key from memory
+
+    Kernel.printf(Kernel.io.mem() &None)!
+    # Kernel: just like Ruby's one
 
     lit 5 = 6
     # don't worry, no error here

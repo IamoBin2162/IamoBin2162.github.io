@@ -516,8 +516,6 @@
 # <boobooli = "@">
 # io.print(boobooli)!
 
-# 💀
-
 # io.printf("%.80f", .1 + .2)!
 # io.printf("💀")!
 
@@ -753,6 +751,7 @@
 # printf(each([1, 2, 3]))!
 
 # printf(next("a9b"))!
+# printf("%s", next("12"))!
 
 # fail("This is RuntimeError")!
 
@@ -764,6 +763,7 @@
 
 # alias Z int
 # $num: Z = 5
+# # i hate type annotations. but anyway ...
 # puts num
 
 # struct Student:
@@ -1066,8 +1066,6 @@
 
 # with open("fmt.py", "r") as f:
 #     printf("%s", f)
-# 	  - WTF ?!
-#     + IDK :)
 # end
 
 # puts mystery
@@ -1370,8 +1368,6 @@
 # native num = 2162
 # io.lprint("num")!
 
-# # unreachable, unimplemented, todo, panic, fixme
-
 # proc main() = printf("Hello, World")
 # main()!
 
@@ -1535,3 +1531,21 @@
 # c > "Bye, World"!
 # print(c << void)!
 # print(c < void)!
+
+# num := natural("-10")
+# print(num)!
+
+# print("Hi") orelse printf("Damn")
+
+# puts hash(pi)
+
+# include std
+# std.core.io.printf("Hello, World")!
+
+# puts alloc(int, "2162")
+
+# print(np.array([1, 2, 3]))!
+
+# be over(a, b), [onlyif b != 0] => a / b
+# be over2(a, b), [onlyif b != 0; ifnot: raise ZeroDivisionError("Nah")] => a / b
+# puts over2(5, 0)

@@ -1194,7 +1194,7 @@ if you've ever programmed in Go, you know what channels are
     # putting value in c channel
     print(c << void)!
     # getting the value
-    # for the value of >> use: void, Nil, nil or None
+    # for the value of << use: void, Nil, nil or None
     # other values cause error
 
     c2 = channel(int)!
@@ -1213,8 +1213,7 @@ if you've ever programmed in Go, you know what channels are
     # NOTICE: in channel class, you can have more than one channel, opposite of chan
     # There were some funcs like size or is_empty or etc. that we had at chan, but we know that they are not reliable (as queue module (py) says), so we didn't implemented them
 
-    # Moon recomends you, to use channel, not chan
-
+    # Moon recomends you, to use channel, not chan, if you listen to me :)
 
 # putv
 it is for printing the value of lit variables
@@ -1223,11 +1222,19 @@ it is for printing the value of lit variables
     putv 5
     # 6
 
+# orelse
+orelse keyword is used for debuging, e.g.
+
+    print("Hi") orelse print("some shit happend")
+
+    # if first expr has error, second one will be ran
+    # else only first expr
+    
 # ~> 
 this is called, soft-calling that is used for calling functions and methods
 but why soft?
 because it first checks that the given param(s) is(are) (a) valid thing(s) or not !
-if it(they) is(are), prints the result of calling it.
+if it(they) is(are), prints the result of calling it(them).
 if it(they) is(are) not, passes so __softly__, without any errors
 
     typeof ~> Nil
@@ -1263,7 +1270,7 @@ these keywords are used to make variables and functions, but the vars and funcs 
     # so many (not all) other values are gonna work correctly but for an unwritten rule, we use these!
 
 # co
-co is a keyword that runs a function (usually) concurrently (due to GIL)
+co is a keyword that runs a function (usually) concurrently (but why usually? because of GIL)
 
     def download():
         printf("%d", 1)
@@ -1323,6 +1330,28 @@ a function that returns a function that runs expr
     # or
     
     load('print(0)')()!
+
+# Behaviors
+Behaviors are just functions but with diffrent faces!
+
+e.g.
+
+    be over(a, b), [onlyif b != 0] => a / b
+    be over2(a, b), [onlyif b != 0; ifnot: raise ZeroDivisionError("Nah")] => a / b
+
+#### 'be' shows behavior, 'over' and 'a, b' are the name and params, and 'onlyif' checks the condition that if it is TRUE, function will raise an error or etc., This error or message or whatever can be your personal one or let US(Moon) do it. If you wanna do it personally, use 'ifnot' and ':' and the error or message.
+#### and after '=>' will be the result that behavior will return
+
+#### NOTICE: Do NOT(!!!) use return keyword after =>, cause Moon itself will return the result
+
+#### NOTICE that if you use 'ifnot' you can even print sth not only raise errors. Like you could say:
+
+    ... ifnot: print("NOOOO") ...
+
+
+#### NOTICE that the usage of 'ifnot' is optional, so as the first example, you can let Moon handle the error :)
+
+run them to see the diffrences!
 
 # var
 creates a new variable
@@ -1662,6 +1691,311 @@ with object keyword, you can create your object, then with of you can create an 
     ulli := ulong_long_int(18446744073709551615)
     # (0, 18446744073709551615]
 
+# std
+from now on (version 6) use std. every function (except some uncommon funcs), that we had them in imm itself, is in this module
+let's see what we got here
+
+    class mem:
+        ptr(n): returns a pointer to n
+
+    class core:
+        bytecode(src): returns the bytecode of compiled src
+        load(expr): returns the result of execute of expr
+        etype(input_data): returns the real type (e.g: etype("2162") is int)
+
+        class io:
+            print(*values, sep="\t")
+            println(*values, sep="\t")
+            throw(__err, message=""): raises __err with message
+            open(file, mode)
+            close(file)
+            status(file): returns that if the file is closed or not
+            freads(file): returns file.readlines
+            fread(file): returns file.readline
+            freadc(file): returns the first char of file.readline
+            read(prompt): returns the input(prompt)
+            gets(): returns input()
+            getc(): returns the first char of input()
+            putc(*values): prints char
+            printf(base, *values)
+            sprint(value)
+            sprintf(base, *values)
+            var_dump(value)
+            system(command): runs command in terminal
+            print_r(__value): pretty prints __value (list)
+            fwrite(*values, file): writes values in file
+            fprint(file, *values): prints values in file
+            fprintln(file, *values)
+            fprintf(file, base, *other)
+            exit(code=0)
+            id(__obj): returns the hed of id of __obj
+            rand(max): returns a random number from 0 to max
+            sleep(sec)
+            format(base, *values)
+            catch(__to_do, __err_type): TODO: thsi func is not implemented yet
+            pprint(*values): pretty prints values
+            pprintf(base, *other)
+            puts(*values): pretty prints values
+            cprint(*values, sep"\t", end="\n", file=stdout, flush=False): prints values with these details (sep, end, ...)
+            warn(msg="")
+            error(__type, msg)
+            putchar(code): returns char of unicode code (code)
+            putchars(*code): returns chars of unicode codes (codes)
+            countc(string, what_char): returns the count of char in string
+            assertEqual(a, b)
+            assertTrue(a)
+            assertFalse(a)
+            scanf(): returns an input
+            strlen(s)
+            strcpy(s): returns a copy of s
+            strcat(a, b): returns concat of a and b
+            atoi(s): returns int(s)
+            atof(s): returns float(s)
+            abort(): exits the program
+            alert(value): returns Warning with value
+            getenv(name): returns the value of env varaible name
+            fgetc(__file): gets a char from __file
+            fgets(__file): gets a line from __file
+            fputc(char, __file): puts a char in __file
+            fputc(to_write, __file): puts to_write in __file
+            class mem:
+                &: returns the ptr
+                *: derefrences the ptr
+                recall(self, key): retruns the key in STORE
+                imprint(self, key, value): STORE[key]=value
+                forget(self, key): STORE.pop(key)
+                clear(self): STORE.clear()
+        make(T)
+        _G
+        _V
+        define_singleton_method(name, value): adds name in globals()
+        keywords={...}
+
+    class testing:
+        test(expr): tests the expr, if err -> returns Error and False, else True
+        leq(a, b): loose equality
+        seq(a, b): strict equality
+        assertEqual(a, b)
+        assertTrue(a)
+        assertFalse(a)
+
+    class os:
+        stdin
+        stdout
+        stderr
+
+    class stack:
+        push(value): pushs the value on stack
+        pop(): deletes the last value on stack and returns it
+        top(): returns the last value on stack (it does NOT remove it)
+        print(): removes the last value and prints it (NOT returns)
+        get(): prints the last value (it does NOT remove it)
+        all(): prints stack
+        add(): deletes two last number on stack, adds them up, appends the result on stack
+        sub(): deletes two last number on stack, does subtraction, appends the result on stack
+        mult(): deletes two last number on stack, does mult, appends the result on stack
+        div(): deletes two last number on stack, does division, appends the result on stack
+        pow(): deletes two last number on stack, does power, appends the result on stack
+        putchar(unicode_code): appends the char of unicode code on stack
+
+    class types:
+        class symbol:
+            to_s(self): returns string version of self.arg
+            next(self): returns the next unicode char of self.arg
+            startswith(self, with_what)
+            endswith(self, with_what)
+
+        class short_int extends int: [-32768, 32767]
+        class ushort_int extends int: [0, 65535]
+        class unsigned_int extends int: [0, 4294967295]
+        class long_int extends int: [-2147483648, 2147483647]
+        class ulong_int extends int: [0, 4294967295]
+        class long_long_int extends int: [-(2**63), (2**63)]
+        class ulong_long_int extends int: [0, 18446744073709551615]
+
+        class list extends list:
+            <<: appends the value given inside of list
+            first
+            last
+            forEach(self, func): implements func for every element of self.it (iterbale)
+            uniq(self): returns updated self.it without any duplicate element
+            select(self, func): retruns a new list which is a list that has elements if func is true about an elem of self.it, else passes
+            chunk(self, size): returns a version of self.it which contains some list with size size
+            each(self, func): returns a new list which contains the func(each elem of self.it)
+
+        class str extends str:
+            <<: appends the given string to self.v (value)
+        
+        class natural extends int:
+            """only positive numbers"""
+            example:
+                natural(-10)!
+                # 10
+
+                natural("-10")!
+                # 10
+
+        byte(value): """=uint8 = [0, 255]"""
+        rune(value): """=int32 = [-2147483648, 2147483647]"""
+
+        class bignum extends int;
+
+        kind_of(a, __T): returns True if a is type of __T, else False
+
+    class err:
+
+        class Error extends BaseException;
+        class SizeError extends BaseException;
+        class UnimplementedError extends BaseException;
+        class TodoError extends BaseException;
+        class PanicError extends BaseException;
+        class RangeError extends BaseException;
+        class FixMeError extends BaseException;
+    
+        fail(message)
+        throw(__err, message="")
+        warn(msg="")
+        error(__type, msg)
+        alert(value)
+        unreachable(msg=""): asserts False with msg
+        unimplemented(): raises UnimplementedError
+        deprecated(message): raises a Warning which tells the runner that a function is deprecated
+
+    class Range:
+        new(self)
+        
+        example:
+            Range('a', 'd').new()!
+            Range(0, 5).new()!
+
+    class colored:
+        RED
+        GREEN
+        PURPLE
+        CYAN
+        BASE
+        UNDERLINE
+        BOLD
+        YELLOW
+        
+        
+    class repl:
+        __clear_exec__(): clears the execute-file
+        mexec(code): executes moon code
+
+    class conv:
+        to_s(value): converts to string
+        to_i(value): converts to integer
+        to_f(value): converts to float
+        to_c(value): converts to complex
+        to_l(value): converts to list
+        to_t(value): converts to tuple
+        to_set(value): converts to set
+        to_bin(value): converts to binary
+        to_b(value): converts to boolean
+        to_o(value): converts to octal
+        to_d(key, value): converts to dict
+        to_enum(value): converts to enumerator
+        to_z(value): converts to zero
+        to_r(value): converts to rational version
+        to_sym(value): converts to symbol
+        atoi(s): converts to int (string to int)
+        atof(s): converts to float (string to float)
+
+    class lazy:
+        TODO: write a shit for this
+
+    class freezable:
+        """gets an argument, then sets that argument to self. if you freeze it, you cannot add anything to it"""
+        
+        example:
+            f := freezable("arg")
+            f.arg := "Hello"
+            printf(f.arg)!
+            f.freeze()!
+            f.arg := "Bye"
+            # error at here ☝🏻
+
+    class visibility:
+        @private(func): makes the given function private; USE THIS AS A DECORATOR
+
+        NOTE: there are some other functions, but as a user, you only use this one
+
+    class expect:
+        toBeEqualTo(self, to): self.value == to
+        toBeGreaterThan(self, than): self.value > than
+        toBeLessThan(self, than): self.value < than
+        toBeGreterEqualTo(self, to): self.value >= to
+        toBeLessEqualTo(self, to): self.value <= to
+        toBeNotEqualTo(self, to): self.value != to
+        toBeIn(self, what): self.value in what
+        toBeNotIn(self, what): self.value not in what
+
+    class undoable:
+        undo(self)
+        redo(self)
+
+        example:
+            state := undoable({"c": 0})
+            state["c"] = 1!
+            state["c"] = 2!
+            print(state)!
+            # 2
+            state.undo()!
+            print(state)!
+            # 1
+            state.undo()!
+            print(state)!
+            # 0
+            state.redo()!
+            print(state)!
+            # 1
+
+    class channel:
+        >>: puts an item into the channel (CAN cause blocking)
+        <<: gets the last item from the channel (CAN cause blocking)
+        >: puts an item into the channel (does NOT cause blocking, if any problem happened, causes error)
+        <: gets the last item from the channel (does NOT cause blocking, if any problem happened, causes error)
+
+    class datetime:
+        now(): constructs a datetime from time.time()
+        year
+        month
+        day
+        weekday(): returns day of the week, where Monday == 0 ... Sunday == 6.
+        today()
+        hour
+        min
+        sec
+
+    class file:
+        open(file, mode)
+        readline(__file)
+        readlines(__file)
+        write(__file, msg): writes msg to __file, returns the length of msg
+
+    next(thing): returns the next char or num (only nums and english-alphas)
+    example: 
+        print(next("a9b"))!
+        # b0c
+        # after 9 -> 0
+
+        print(next(12))!
+        # 13
+
+        print(next("12"))!
+        # 23
+        # NOTICE 12 here is string
+
+    before(thing): returns the char or num before thing
+    typeof(obj)
+    lenof(__iterable)
+    sizeof(obj)
+    iota(reset=False)
+    nop(): no operation (maybe for a placeholder)
+    compose(f, g, *args): returns f(g(args))
+
+
 # errors
 in Moon's errors you can see some words like `<module>`, `<string>`, and name of functions and classes
 
@@ -1961,6 +2295,9 @@ just copy the moon folder from syntax folder in the .vscode folder (that you hav
     | use      | is for importing                                                                                              |
     | affirm   | is for asserting                                                                                              |
     | whilst   | is just like while                                                                                            |
+    | be       | is for making behaviors                                                                                       |
+    | onlyif   | is used in behavior blocks to make a condition for it                                                         |
+    | ifnot    | is used in behavior blocks to create a personal response to error                                             |
 
 # Other Things:
 

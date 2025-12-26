@@ -35,12 +35,30 @@ from dataclasses import dataclass
 import string
 from icecream import ic
 import traceback
-import threading
 import datetime
 from dotenv import load_dotenv
 from typing import TypeVar, Generic, Self
 import inspect
 import builtins
+import pandas as np
+import signal
+
+# <T>
+# delete
+# overload
+# gen
+# sync
+# async gen
+# timed
+# cache
+# co
+# det
+# nop
+# autorun
+
+
+def autorun(func, *args):
+    return func(*args)
 
 def bytecode(src):
     return dis.dis(compile(src, '<string>', 'exec'))
@@ -65,6 +83,8 @@ type unknown = 'unknown'
 type char = 'char'
 type HUGE_VAL = 'HUGE_VAL'
 type perhaps = maybe
+type anything = anything
+
 start = time.time()
 in_do = False
 inf = float('inf')
@@ -85,7 +105,7 @@ stdin = sys.stdin
 stderr = sys.stderr
 argv = sys.argv
 __FILE__ = argv[1]
-__VERSION__ = 5
+__VERSION__ = 6
 __LOCALS__ = locals()
 __GLOBALS__ = globals()
 __NAME__ = __name__
@@ -202,7 +222,8 @@ keywords = [
     'to', 'define', 'nonlocal', 'consume', 'static', 'forever', 'LUA', 'RB', 'ZIG', 'C', 'CPP', 'GLEAM', 'ASM', 'putv', 'var', 'fn', 'isnot', 
     'cast', 'inc', 'decr', 'macro', 'notin', 'also', 'before', 'after', 'perhaps', 'mirror', 'sleep', 'wait', 'mystery', 'nothing', 'undefined', 
     'unknown', 'Nil', 'HUGE_VAL', 'through', 'namespace', 'interface', 'again', 'block', 'does', 'awaitfor', 'ensure', 'fixme', 'has', 'lacks',
-    'sqrt', 'cbrt', 'sin', 'cos', 'tan', 'log', 'ln', 'native', 'proc', 'let', 'fun', 'object', 'of', 'co', 'use', 'whilst', 'affirm', 
+    'sqrt', 'cbrt', 'sin', 'cos', 'tan', 'log', 'ln', 'native', 'proc', 'let', 'fun', 'object', 'of', 'co', 'use', 'whilst', 'affirm', 'orelse', 
+    'be', 'onlyif', 'ifnot',
 ]   
 keywords.sort()
 
@@ -532,7 +553,7 @@ def toint(value):
 
 def tofloat(value):
     return float(value)
-    
+
 RED = '\033[31m'
 GREEN = '\033[32m'
 PURPLE = '\033[35m'
@@ -542,6 +563,10 @@ UNDERLINE = '\033[4m'
 BOLD = '\033[1m'
 YELLOW = '\033[33m'
 ORANGE = '\033[40m'
+
+def __wait(T, callback):
+    timer = threading.Timer(T, callback)
+    timer.start()
 
 def bytecode(code):
     code_obj = compile(code, '<string>', 'exec')
@@ -763,7 +788,7 @@ def __py__(expr):
     # don't have energy to complete this one, but i think it's a good idea :(
     ...
 
-pi = math.pi
+# pi = math.pi
 e = math.e
 tau = math.tau
 
@@ -1173,6 +1198,9 @@ def chomp(__str: str):
 
 argc = lenof(argv)
 
+ARGV = argv
+ARGC = argc
+
 class NoMethodFoundError(BaseException): ...
 
 class _KERNEL_META(type):
@@ -1255,6 +1283,13 @@ def make(T):
 
     elif T == Range:
         return Range(0, 1).new()
+
+def alloc(T, *args):
+    if T.__class__.__name__ != "type":
+        raise TypeError(f"Only type is acceptable not {T.__class__.__name__}")
+    if args == ():
+        return T()
+    return T(*args)
 
 def system(command):
     return os.system(command)
@@ -1456,7 +1491,7 @@ def deprecated(message):
         return wrapper
     return decorator
 
-class iter:
+class __iter:
 
     def __init__(self, n=0):
         self.n = n
@@ -1629,6 +1664,8 @@ def __random__():
 
 class FixMeError(BaseException): ...
 
+class BehaviorConditionError(BaseException): ...
+
 # class String(str): ...
 # class Integer(int): ...
 # class Float(float): ...
@@ -1752,6 +1789,51 @@ class channel:
 
     # def size(self):
     #     return self.ch.qsize() 
+
+class natural(int):
+    def __init__(self, value):
+        self.v = value
+
+    def __repr__(self):
+        if int(self.v) >= 0:
+            return to_s(self.v)
+        return to_s(-int(self.v))
+
+class array(_list): ...
+
+# __matmul__
+# __invert__
+# __getitem__
+# __setitem__
+# __delitem__
+# __contains__
+# __iadd__
+# __isub__
+# __imul__
+# __itruediv__
+# __imod__
+# __ifloordiv__
+# __ipow__
+# __imatmul__
+# __iand__
+# __ior__
+# __ixor__
+# __irshift__
+# __ilshift__
+# __getattribute__
+# __setattr__
+# __delattr__
+# __enter__
+# __call__
+# __buffer__    -> memoryview
+# __release_buffer__   -> del memoryview
+# __sizeof__
+
+# hash
+
+# @ % ~ 
+
+# with, async with, async for, 
 
 def callMain():
     try:
@@ -2138,6 +2220,9 @@ async def __{msg[msg.index("var")+3:msg.index("=")].strip()}():
                     elif ":" in msg:
                         exec(f"{msg[msg.index("var")+3:msg.index("=")+1:].strip()} {eval(msg[msg.index("=")+1:msg.index(":")].strip()).__class__.__name__}({msg[msg.index("=")+1:msg.index(":")].strip()}).{msg[msg.index(":")+1:]}")
 
+                    elif "expires" in msg:
+                        ...
+
                     else:
                         try:
                             exec(f"{msg[msg.index("var")+3:msg.index("=")].strip()} = {msg[msg.index("=")+1:].strip()}")
@@ -2186,6 +2271,47 @@ async def __{msg[msg.index("var")+3:msg.index("=")].strip()}():
             #         for n in items[k]:
             #             BLOCK += n
 
+#             elif "within" in msg:
+#                 BLOCK = ""
+#                 items = [lines[x] for x in range(i+1, len(lines))]
+#                 for k in range(len(items)):
+#                     for n in items[k]:
+#                         BLOCK += n
+#                 def __DO_AFTER_RECHING_THE_END_OF_WITHIN_BLOCK__():
+#                     printf("%s", Nil)
+                
+#                 exec(f"""
+#     __wait({msg[msg.index("within")+6:msg.index(":")].strip()}, __DO_AFTER_RECHING_THE_END_OF_WITHIN_BLOCK__)
+# {BLOCK[:BLOCK.index("end")]}
+                
+# """)  
+                    
+            elif "be" in msg and "=>" in msg and "onlyif" in msg:
+                __cond = msg[msg.index("[")+1:msg.index("]")].strip()
+
+                if "return" in msg:
+                    raise SyntaxError("Using return in behavior is denied!")
+                
+                if not "ifnot" in __cond:
+                    if not ";" in __cond and not ":" in __cond:
+                        pass
+                    
+                    exec(f"""
+def {msg[msg.index("be")+2:msg.index(")")+1].strip()}:
+    if not {msg[msg.index("onlyif")+6:msg.index("]")].strip()}:
+        raise BehaviorConditionError("An Error occured in the condition of '{msg[msg.index("be")+2:msg.index("(")].strip()}' behavior; '{UNDERLINE}{BOLD}{msg[msg.index("onlyif")+6:msg.index("]")].strip()}{BASE}'")
+    return {msg[msg.index("=>")+2:].strip()}
+
+""")   
+                else:
+                    if ";" in __cond and ":" in __cond:
+                        exec(f"""
+def {msg[msg.index("be")+2:msg.index(")")+1].strip()}:
+    if not {msg[msg.index("onlyif")+6:msg.index(";")].strip()}:
+        {msg[msg.index(":")+1:msg.index("]")].strip()}
+    return {msg[msg.index("=>")+2:].strip()}
+
+""")
 
             elif "use" in msg:
                 exec(f"from {msg[msg.index("use")+3:msg.index(".")].strip()} import {msg[msg.index(".")+1:].strip()}")
@@ -2272,6 +2398,20 @@ async def __{msg[msg.index("var")+3:msg.index("=")].strip()}():
 {msg[msg.index("$")+1:msg.index("=")]} = {msg[msg.index('=')+1:].strip()}
     """
                 )
+
+            elif "orelse" in msg:
+                first_shit = msg[:msg.index("orelse")].strip()
+                second = msg[msg.index("orelse")+6:].strip()
+
+                # if eval(first_shit) in [Nil, nil, None, void]:
+                #     exec(second)
+                # else:
+                #     exec(first_shit)
+
+                try:
+                    eval(first_shit)
+                except BaseException as e:
+                    eval(second)
                     
             elif "let" in msg and not "if" in msg:
                 STACK[f"{msg[msg.index("let")+3:msg.index("=")].strip()}"] = eval(msg[msg.index("=")+1:])
@@ -2352,6 +2492,8 @@ class {msg[msg.index("object")+6:msg.index(":")].strip()}:
                 except BaseException as e:
                     raise e.__class__(e)
 
+            # elif "let" in msg and "assert" in msg and "as" in msg:
+
             elif "awaitfor" in msg:
                 rand_name_for_async_func = f"__{__random__()}__"
                 exec(
@@ -2364,10 +2506,10 @@ asyncio.run({rand_name_for_async_func}())
 """
                 )
 
-            elif ":" in msg and not "def" in msg and not "class" in msg and not "if" in msg and not "elif" in msg and not "else" in msg and not "for" in msg and not "while" in msg\
-                and not "module" in msg and not "def" in msg and not "until" in msg and not "unless" in msg and not "switch" in msg and not "case" in msg and not "try" in msg \
-                and not "except" in msg and not "finally" in msg and not "struct" in msg and not "foreach" in msg and not "when" in msg and not "match" in msg and not "loop" in msg\
-                and not "forever" in msg and not "block" in msg and not "namespace" in msg and not "interface" in msg and not "fun" in msg and not "object":
+            elif ":" in msg and "def" not in msg and "class" not in msg and "if" not in msg and "elif" not in msg and "else" not in msg and "for" not in msg and "while" not in msg\
+                and "module" not in msg and "def" not in msg and "until" not in msg and "unless" not in msg and "switch" not in msg and "case" not in msg and "try" not in msg \
+                and "except" not in msg and "finally" not in msg and "struct" not in msg and "foreach" not in msg and "when" not in msg and "match" not in msg and "loop" not in msg\
+                and "forever" not in msg and "block" not in msg and "namespace" not in msg and "interface" not in msg and "fun" not in msg and "object":
                 exec(f"print({eval(msg[:msg.index(":")]).__class__.__name__}({msg[:msg.index(":")]}).{msg[msg.index(":")+1:]})")
 
             # elif ":" in msg:

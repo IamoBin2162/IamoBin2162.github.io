@@ -43,19 +43,9 @@ import builtins
 import pandas as np
 import signal
 
-# <T>
-# delete
-# overload
-# gen
-# sync
-# async gen
-# timed
-# cache
-# co
-# det
-# nop
-# autorun
 
+def nop():
+    return hex(144)
 
 def autorun(func, *args):
     return func(*args)
@@ -272,18 +262,10 @@ def swap(a, b):
 def load(expr):
     return lambda: exec(expr)
 
-# def dofile(file=stdout):
-#     if file != stdout:
-#         with open(file, "r") as _f:
-#             __clear_exec__()
-#             for _line in _f.readlines():
-#                 mexec(_line)
-    
-#     else:
-#         _p = io.scanf()
-#         __clear_exec__()
-#         mexec(_p)
-#     __clear_exec__()
+def mrange(R: str):
+    # mrange = math range
+
+    ...
 
 class Symbol:
 
@@ -323,12 +305,12 @@ def __etype__(input_data):
     except (ValueError, SyntaxError):
         return str
 
-_1 = ""
-def each(object):
-    _1 = ""
-    for elem in object:
-        _1 += to_s(elem) + "\n"
-    return _1
+# _1 = ""
+# def each(object):
+#     _1 = ""
+#     for elem in object:
+#         _1 += to_s(elem) + "\n"
+#     return _1
 
 def fail(message):
     raise RuntimeError(message)
@@ -538,6 +520,10 @@ show = False
 def measure():
     global show
     show = True
+
+def timed(func, *args):
+    func(*args)
+    measure()
 
 def sizeof(thing):
     return sys.getsizeof(thing)
@@ -1829,17 +1815,23 @@ class array(_list): ...
 # __release_buffer__   -> del memoryview
 # __sizeof__
 
-# hash
-
-# @ % ~ 
-
-# with, async with, async for, 
-
 def callMain():
     try:
         exec("main()")
     except NameError:
         pass
+
+# def dofile(file=stdout):
+#     if file != stdout:
+#         with open(file, "r") as _f:
+#             __clear_exec__()
+#             for _line in _f.readlines():
+#                 mexec(_line)
+
+#     else:
+#         _p = input()
+#         __clear_exec__()
+#         mexec(_p)
 
 with open(argv[1], "r") as file:
     lines = file.readlines()
@@ -2312,6 +2304,32 @@ def {msg[msg.index("be")+2:msg.index(")")+1].strip()}:
     return {msg[msg.index("=>")+2:].strip()}
 
 """)
+
+            elif "par" in msg:
+                if "?" in msg:
+                    if msg.count("?") == 1:
+                        random_name = __random__()
+                        exec(f"""
+def {msg[msg.index("par")+3:msg.index("=")].strip()}({random_name}):
+    return {msg[msg.index("=")+1:].strip().replace("?", f"{random_name}")}
+""")
+                    else:
+                        number = msg.count("?")
+                        list_of_names = []
+                        __string_of_list_of_names = ""
+                        for i in range(number):
+                            list_of_names.append(f"_{i}")
+
+                        for elem in list_of_names:
+                            __string_of_list_of_names += elem + ", "
+
+                        exec(f"""
+def {msg[msg.index("par")+3:msg.index("=")].strip()}({__string_of_list_of_names.strip()}):
+    return {msg[msg.index("=")+1:msg.index("?")].strip()}{__string_of_list_of_names.strip()})
+""")
+
+                else:
+                    raise SyntaxError("if you don't need a placeholder like ?, DO NOT use 'par'")
 
             elif "use" in msg:
                 exec(f"from {msg[msg.index("use")+3:msg.index(".")].strip()} import {msg[msg.index(".")+1:].strip()}")

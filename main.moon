@@ -1549,3 +1549,27 @@
 # be over(a, b), [onlyif b != 0] => a / b
 # be over2(a, b), [onlyif b != 0; ifnot: raise ZeroDivisionError("Nah")] => a / b
 # puts over2(5, 0)
+
+# nop <=
+
+# &@timed
+# def hi():
+#     printf("Hello")
+# end
+
+# &@autorun
+# def hi():
+#     printf("Hello")
+# end
+
+# def sum(a, b):
+#     return a + b
+# end
+# par sum10 = sum(10, ?)
+# puts sum10(5)
+
+# def some(a, b, c):
+#     return a + b - c
+# end
+# par some2 = some(1, ?, ?)
+# puts some2(2, 3)

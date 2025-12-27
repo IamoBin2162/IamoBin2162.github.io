@@ -1088,7 +1088,7 @@ when you start a line with &, you tell moon that you will have a block (a bunch 
         return f"{name} is {age} years old that lives in {city}"
     end
 
-    # suppose you are a fan of type annotation (sorry but f*ck type annotations), or you wanna write functions as Python recommends, you can do
+#### suppose you are a fan of type annotation, fuck type annotations, anyway, or you wanna write functions as Python recommends, you can do sth like that
 
     puts person("mobin", 17, "Urmia")
 
@@ -1211,7 +1211,7 @@ if you've ever programmed in Go, you know what channels are
     # << gets and item on channel and delets it
 
     # NOTICE: in channel class, you can have more than one channel, opposite of chan
-    # There were some funcs like size or is_empty or etc. that we had at chan, but we know that they are not reliable (as queue module (py) says), so we didn't implemented them
+    # There were some funcs like size or is_empty or etc. that we had at chan, but we know that they are not reliable (as queue module (py) says), so we didn't implemente them
 
     # Moon recomends you, to use channel, not chan, if you listen to me :)
 
@@ -1222,6 +1222,32 @@ it is for printing the value of lit variables
     putv 5
     # 6
 
+# NOP
+nop is a function which will return 0x90 (hex).
+this can be used in functions for showing that there is no operation (for now at least!) or showing that the func ain't completed or ...
+
+    def ring_and_run_away():
+        nop()
+
+# some functions for functions
+
+`timed` function is used (as decorater) to give the time of the ran function in seconds
+
+`autorun` function is used (as decorater) to run the given function (with params if there is any) automatically
+
+    &@timed
+    def hi():
+        printf("Hello")
+    end
+
+    &@autorun
+    def hi():
+        printf("Hello")
+    end
+
+
+#### NOTICE that i used & to use decoraters 
+
 # orelse
 orelse keyword is used for debuging, e.g.
 
@@ -1229,7 +1255,21 @@ orelse keyword is used for debuging, e.g.
 
     # if first expr has error, second one will be ran
     # else only first expr
-    
+
+# par
+par is used for using partial syntax
+
+    def sum(a, b):
+        return a + b
+    end
+    par sum10 = sum(10, ?)
+    puts sum10(5)
+
+#### We created a function called sum which will get a and b and add the up and return the result. and we created a partial-instance of sum function called sum10, which calls sum func with a 10 as first param and a '?' as second param, But '?' is like a placeholder for us to use this partial-instance more in the future, like we called our partial-instance with a 5, so Moon will replace the placeholder ? with 5 and return the result!
+#### Hope this helps
+
+#### NOTICE that we can use more placeholders, like two ?, or three of it and more!
+
 # ~> 
 this is called, soft-calling that is used for calling functions and methods
 but why soft?
